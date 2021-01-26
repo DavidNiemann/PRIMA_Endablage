@@ -1,0 +1,17 @@
+{
+    "avatar": {
+        "startLife": 5000,
+        "damage": 100
+    },
+    "enemy": {
+        "startLife": 1000,
+        "lifePerLevel": 500,
+        "damage": 100,
+        "damagePerLevel": 100
+    },
+    "world": {
+        "unit": 2,
+        "worldLength": 50,
+        "worldhight": 40
+    }
+}
