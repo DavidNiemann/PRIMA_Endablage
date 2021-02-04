@@ -9,9 +9,15 @@ namespace Endabgabe {
         private fist: MoveObject;
         private job: JOB = JOB.idle;
         private sprite: fcAid.NodeSprite;
+        private health: number;
+        private damage: number;
+        private invulnerable: boolean = false;
+        public healthBar: fc.Node;
+        
         public activ: boolean = false;
 
-        public constructor(_name: string, _size: fc.Vector3, _position: fc.Vector3) {
+
+        public constructor(_name: string, _size: fc.Vector3, _position: fc.Vector3, _health: number, _damage: number) {
             super(_name, _size, _position);
 
             this.sprite = new fcAid.NodeSprite("sprite");
@@ -21,18 +27,24 @@ namespace Endabgabe {
             this.sprite.framerate = 7
             this.addChild(this.sprite);
             this.sprite.mtxLocal.translateY(-_size.y / 2);
-           // this.removeComponent(this.getComponents(fc.ComponentMaterial)[0]);
-            this.jump();
+            this.sprite.mtxLocal.translateZ(0.01);
+            // this.removeComponent(this.getComponents(fc.ComponentMaterial)[0]);
+            //this.jump();
             this.fist = new MoveObject("fist", new fc.Vector3(_size.x, _size.y, _size.z), new fc.Vector3(0, 0, 0));
             this.fist.grounded = true;
             this.fist.mtxLocal.translateY(_size.y / 2);
             this.sprite.addChild(this.fist);
-          //  this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Enemy.animations["Idle"]);
+             this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Enemy.animations["Idle"]);
+            this.health = _health;
+            this.damage = _damage;
+          
+           
+
         }
 
         public update(): void {
             super.update();
-            if (this.activ) {
+            if (this.activ && this.invulnerable == false) {
 
                 switch (this.job) {
                     case JOB.walk:
@@ -77,13 +89,14 @@ namespace Endabgabe {
 
                     this.strike();
                 }
-                
-                if (this.fist.grounded == false ) {
+
+                if (this.fist.grounded == false) {
                     this.fist.rect.position.x = this.fist.mtxWorld.translation.x - this.fist.rect.size.x / 2;
                     this.fist.rect.position.y = this.fist.mtxWorld.translation.y - this.fist.rect.size.y / 2;
                     if (this.fist.checkCollision(avatar, false)) {
                         console.log("hit");
                         //enemies.removeChild(avatar);
+                        avatar.newhealth(this.damage);
                     }
 
                 }
@@ -91,13 +104,13 @@ namespace Endabgabe {
             }
         }
 
-        public jump = (): void => {
-            if (this.grounded) {
-                this.velocity.y = 20;
-            }
-            fc.Time.game.setTimer(10000, 1, this.jump);
-        }
-
+        /*   public jump = (): void => {
+              if (this.grounded) {
+                  this.velocity.y = 20;
+              }
+              fc.Time.game.setTimer(10000, 1, this.jump);
+          }
+   */
 
 
         public static generateSprites(_spritesheet: fc.CoatTextured): void {
@@ -171,15 +184,37 @@ namespace Endabgabe {
                 }
         }
 
-        public  endstrike = (): void => {
+        public endstrike = (): void => {
             this.setAnimation(JOB.idle);
             this.fist.mtxLocal.translateX(-1);
             this.sprite.mtxLocal.translateX(-1);
             this.fist.grounded = true;
         }
 
+        public setHealth(_damage: number): boolean {
+           
+            if (this.invulnerable) {
+                return false;
+            }
+            this.invulnerable = true;
+            fc.Time.game.setTimer(500, 1, this.setVulnerable/* function (): void { this.invulnerable  } */);
+            this.health -= _damage;
+         
+            if (this.health <= 0) {
+                return true;
+            }
+            return false;
 
+        }
+        public  setVulnerable = (): void =>{ 
+            this.invulnerable = false;
+        }
     }
 
 
+
 }
+
+
+
+

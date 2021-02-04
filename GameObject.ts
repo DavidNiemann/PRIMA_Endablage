@@ -4,7 +4,7 @@ namespace Endabgabe {
 
     export class GameObject extends fc.Node { 
 
-        private static readonly meshQuad: fc.MeshQuad = new fc.MeshQuad();
+        protected static readonly meshQuad: fc.MeshQuad = new fc.MeshQuad();
        // private static readonly mtrSolidWhite: fc.Material = new fc.Material("SolidWhite", fc.ShaderUniColor, new fc.CoatColored(fc.Color.CSS("WHITE")));
         public rect: fc.Rectangle;
       //  private cmpMaterial: fc.ComponentMaterial;

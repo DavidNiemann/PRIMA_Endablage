@@ -10,20 +10,30 @@
     <script src="../FudgeAid/FudgeAid.js"></script>
     <script src="../FudgeUserInterface/FudgeUserInterface.js"></script>
     <script src="Main.js"></script>
+    <link rel="stylesheet" href="style.css">
 
 </head>
 
 <body>
     <canvas></canvas>
+    <div id="hud">
+        <div id="healthDiv">
+         
+            <label for="health">Health</label>
+            <input  id="health" type="number" key="health" disabled />
+        </div>
+        <div id="scoreDiv">
+            <label for="score">Score</label>
+           
+            <input id="score" type="number" key="score" disabled />
+        </div>
 
-    <style>
-        canvas {
-
-            width: 800px;
-            height: 600px;
-
-        }
-    </style>
+        <div id="enemyHealth">
+            <label for="enemyH"></label>
+            <input type="radio"  name="enemyH" id="enemyH">
+        </div>
+    </div>
+    <div id="gameButtenDiv"></div>
 </body>
 
 </html>

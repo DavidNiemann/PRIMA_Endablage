@@ -1,0 +1,38 @@
+:root{
+    --canvasheight:  600px;
+    --canvaswidth:  800px;
+}
+input{
+    appearance: textfield;
+}
+div#hud {
+    position: absolute;
+    top: 0px;
+    left: 10px;
+    font-size: large;
+}
+input[type="number"] {
+    appearance: textfield;
+    font-family:  "Lucida Sans Unicode";
+    font-size: 1em;
+    border: none;
+    background-color: rgba(0, 255, 255, 0);
+    color:black;
+    
+    width:4em;
+}
+canvas {
+
+    width: var(--canvaswidth);
+    height: var(--canvasheight);
+
+}
+
+#healthDiv{
+    position: absolute;  
+    left: 20px;
+}
+#scoreDiv{
+    position: absolute;  
+    left: calc( var(--canvaswidth) - 70px) ;
+}

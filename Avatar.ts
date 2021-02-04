@@ -17,12 +17,13 @@ namespace Endabgabe {
         private static animations: fcAid.SpriteSheetAnimations;
         private control: fc.Control = new fc.Control("AvatarControl", 10, fc.CONTROL_TYPE.PROPORTIONAL);
 
-      /*   private avatarLife: number;
-        private avatarDamage: number; */
+        /*   private avatarLife: number;
+          private avatarDamage: number; */
 
         private fist: MoveObject;
         private sprite: fcAid.NodeSprite;
         private avatarStatus: AvatarStatus = AvatarStatus.idle;
+        private invulnerable: boolean = false;
 
         public constructor(_name: string, _size: fc.Vector3, _position: fc.Vector3) {
             super(_name, _size, _position);
@@ -79,6 +80,7 @@ namespace Endabgabe {
                         + fc.Keyboard.mapToValue(1, 0, [fc.KEYBOARD_CODE.D, fc.KEYBOARD_CODE.ARROW_RIGHT])
                     );
                     this.velocity.x = this.control.getOutput();
+                    this.hnddDirection(this.velocity);
                 }
         }
 
@@ -108,11 +110,14 @@ namespace Endabgabe {
             this.fist.rect.position.y = this.fist.mtxWorld.translation.y - this.fist.rect.size.y / 2;
             if (this.fist.grounded == false) {
 
-                for (let enemy of enemies.getChildren() as GameObject[]) {
+                for (let enemy of enemies.getChildren() as Enemy[]) {
                     //console.log(this.fist.rect, enemy.rect , this.rect);
                     if (this.fist.checkCollision(enemy, false)) {
-                        console.log();
-                        enemies.removeChild(enemy);
+                        // enemies.removeChild(enemy);
+                        if (enemy.setHealth(avatarProperties.damage)) {
+                            enemies.removeChild(enemy);
+                            gameState.score += 1;
+                        }
                     }
                 }
             }
@@ -148,7 +153,7 @@ namespace Endabgabe {
             this.fist.grounded = true;
         }
 
-        public hndMouse = (_event: MouseEvent): void  => {
+        public hndMouse = (_event: MouseEvent): void => {
             if (_event.movementX < 0) {
                 this.flip(true);
 
@@ -156,7 +161,22 @@ namespace Endabgabe {
                 this.flip(false);
             }
         }
+        public newhealth(_damage: number): void {
+            if (this.invulnerable == false) {
+                gameState.health -= _damage;
+                if (gameState.health <= 0) {
+                    hndGameOver();
+                }
+                this.invulnerable = true;
+                fc.Time.game.setTimer(500, 1, this.setVulnerable/* function (): void { this.invulnerable  } */);
+            }
 
+
+        }
+
+        public setVulnerable = (): void => {
+            this.invulnerable = false;
+        }
 
         private flip(_reverse: boolean): void {
             if (this.fist.grounded)
@@ -192,7 +212,9 @@ namespace Endabgabe {
 
         }
 
-
+        private hnddDirection(_direction: fc.Vector3): void {
+            if (_direction.x < 0) { this.flip(true); } else { this.flip(false); }
+        }
 
     }
 

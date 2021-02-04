@@ -10,14 +10,14 @@ namespace Endabgabe {
         public worldstatus: Worldstatus;
 
 
-   /*      public worldNumber: number = 0;
-        public unit: number; // = 2;
-        public worldLength: number; // = unit * 25;
-        public worldhight: number; // = unit * 20; */
+        /*      public worldNumber: number = 0;
+             public unit: number; // = 2;
+             public worldLength: number; // = unit * 25;
+             public worldhight: number; // = unit * 20; */
 
         private tempWall: GameObject;
         private txtFloor: fc.TextureImage = new fc.TextureImage("../GameAssets/Ground.png");
-       
+
         constructor(_name: string) {
             this.name = _name;
             this.worldstatus = Worldstatus.idel;
@@ -32,11 +32,24 @@ namespace Endabgabe {
             levelRoot.addChild(this.tempWall);
             levelRoot.addChild(new GameObject("RightWall", new fc.Vector3(unit, worldhight, unit), new fc.Vector3(23 + _position.x, 0 + _position.y, 0 + _position.z)));
             levelRoot.addChild(new GameObject("Ceiling", new fc.Vector3(worldLength, unit, unit), new fc.Vector3(0 + _position.x, 17 + _position.y, 0 + _position.z)));
+
+            let length: number = fc.Random.default.getRange(unit, worldLength / 2 );
+           
+            let xPos: number = fc.Random.default.getRange(-worldLength / 2 + length + unit, worldLength / 2 - length - unit );
+            let jumpDistance: number = unit;
+            for (let i: number = 0; i < fc.Random.default.getRange(0, 4); i++) {
+                xPos = fc.Random.default.getRange(xPos + jumpDistance, -(xPos + jumpDistance));
+                length = fc.Random.default.getRange(unit, worldLength / 2 );     
+                levelRoot.addChild(new Floor("Ground", new fc.Vector3(length, unit, unit), new fc.Vector3(xPos + _position.x, (3 - (unit - unit / 4) * i) * -unit * 2 + _position.y, 0 + _position.z), mtrWall));
+              
+            }
+
+
             return levelRoot;
         }
 
         public createEnemie(_level: number): Enemy {
-            return new Enemy("enemy", new fc.Vector3(unit, unit, 1), new fc.Vector3(fc.Random.default.getRange(5, 10) + worldLength * _level, 0, 0));
+            return new Enemy("enemy", new fc.Vector3(unit, unit, 1), new fc.Vector3(fc.Random.default.getRange(5, 10) + worldLength * _level, 0, 0), enemyProperties.startLife + _level * enemyProperties.lifePerLevel, Math.floor(enemyProperties.damage + _level * enemyProperties.damagePerLevel));
 
         }
 
@@ -61,9 +74,9 @@ namespace Endabgabe {
 
         }
 
-    /*     public loadWorldData() {
-
-        } */
+        /*     public loadWorldData() {
+    
+            } */
 
     }
 

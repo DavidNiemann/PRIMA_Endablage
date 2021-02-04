@@ -59,20 +59,24 @@ var Endabgabe;
         }
         hndYCollision(_target) {
             if (this.mtxLocal.translation.y > _target.mtxLocal.translation.y) {
-                if (!this.grounded) { //this.mtxLocal.translation.y != _target.mtxLocal.translation.y + 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.y + _target.getComponent(fc.ComponentMesh).pivot.scaling.y)) {
+                if ( /* !this.grounded) { */this.mtxLocal.translation.y != _target.mtxLocal.translation.y + 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.y + _target.getComponent(fc.ComponentMesh).pivot.scaling.y)) {
                     this.grounded = true;
                     this.velocity.y = 0;
                     this.mtxLocal.translation = new fc.Vector3(this.mtxLocal.translation.x, _target.mtxLocal.translation.y + 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.y + _target.getComponent(fc.ComponentMesh).pivot.scaling.y), 0);
                 }
             }
-            else {
-                //if (this.mtxLocal.translation.y != _target.mtxLocal.translation.y - 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.y + _target.getComponent(fc.ComponentMesh).pivot.scaling.y)) {
-                this.velocity.y = 0;
-                this.mtxLocal.translation = new fc.Vector3(this.mtxLocal.translation.x, _target.mtxLocal.translation.y - 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.y + _target.getComponent(fc.ComponentMesh).pivot.scaling.y), 0);
-                //}
-            }
+            /*  else {
+                 if (this.mtxLocal.translation.y != _target.mtxLocal.translation.y - 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.y + _target.getComponent(fc.ComponentMesh).pivot.scaling.y)) {
+                     this.velocity.y = 0;
+                     this.mtxLocal.translation = new fc.Vector3(this.mtxLocal.translation.x, _target.mtxLocal.translation.y - 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.y + _target.getComponent(fc.ComponentMesh).pivot.scaling.y), 0);
+                     //}
+                 }
+ 
+             } */
         }
         hndXCollision(_target) {
+            if (_target.name.includes("Wall") == false)
+                return;
             if (this.mtxLocal.translation.x < _target.mtxLocal.translation.x) {
                 if (this.mtxLocal.translation.x != _target.mtxLocal.translation.x - 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.x + _target.getComponent(fc.ComponentMesh).pivot.scaling.x)) {
                     this.mtxLocal.translation = new fc.Vector3(_target.mtxLocal.translation.x - 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.x + _target.getComponent(fc.ComponentMesh).pivot.scaling.x), this.mtxLocal.translation.y, 0);
@@ -139,6 +143,7 @@ var Endabgabe;
             super(_name, _size, _position);
             this.control = new fc.Control("AvatarControl", 10, 0 /* PROPORTIONAL */);
             this.avatarStatus = AvatarStatus.idle;
+            this.invulnerable = false;
             this.hadKeyboard = () => {
                 if (this.fist.grounded)
                     if (fc.Keyboard.isPressedOne([fc.KEYBOARD_CODE.A, fc.KEYBOARD_CODE.ARROW_LEFT, fc.KEYBOARD_CODE.D, fc.KEYBOARD_CODE.ARROW_RIGHT])) {
@@ -146,6 +151,7 @@ var Endabgabe;
                         this.control.setInput(fc.Keyboard.mapToValue(-1, 0, [fc.KEYBOARD_CODE.A, fc.KEYBOARD_CODE.ARROW_LEFT])
                             + fc.Keyboard.mapToValue(1, 0, [fc.KEYBOARD_CODE.D, fc.KEYBOARD_CODE.ARROW_RIGHT]));
                         this.velocity.x = this.control.getOutput();
+                        this.hnddDirection(this.velocity);
                     }
             };
             this.hndJump = () => {
@@ -178,6 +184,9 @@ var Endabgabe;
                 else if (_event.movementX > 0) {
                     this.flip(false);
                 }
+            };
+            this.setVulnerable = () => {
+                this.invulnerable = false;
             };
             this.sprite = new fcAid.NodeSprite("sprite");
             this.sprite.addComponent(new fc.ComponentTransform());
@@ -224,8 +233,11 @@ var Endabgabe;
                 for (let enemy of Endabgabe.enemies.getChildren()) {
                     //console.log(this.fist.rect, enemy.rect , this.rect);
                     if (this.fist.checkCollision(enemy, false)) {
-                        console.log();
-                        Endabgabe.enemies.removeChild(enemy);
+                        // enemies.removeChild(enemy);
+                        if (enemy.setHealth(Endabgabe.avatarProperties.damage)) {
+                            Endabgabe.enemies.removeChild(enemy);
+                            Endabgabe.gameState.score += 1;
+                        }
                     }
                 }
             }
@@ -237,6 +249,16 @@ var Endabgabe;
             }
             if (fc.Keyboard.isPressedOne([fc.KEYBOARD_CODE.A, fc.KEYBOARD_CODE.ARROW_LEFT, fc.KEYBOARD_CODE.D, fc.KEYBOARD_CODE.ARROW_RIGHT]) && this.fist.grounded && this.grounded) {
                 this.setAnimation(AvatarStatus.walk);
+            }
+        }
+        newhealth(_damage) {
+            if (this.invulnerable == false) {
+                Endabgabe.gameState.health -= _damage;
+                if (Endabgabe.gameState.health <= 0) {
+                    Endabgabe.hndGameOver();
+                }
+                this.invulnerable = true;
+                fc.Time.game.setTimer(500, 1, this.setVulnerable /* function (): void { this.invulnerable  } */);
             }
         }
         flip(_reverse) {
@@ -268,6 +290,14 @@ var Endabgabe;
                 }
             }
         }
+        hnddDirection(_direction) {
+            if (_direction.x < 0) {
+                this.flip(true);
+            }
+            else {
+                this.flip(false);
+            }
+        }
     }
     Endabgabe.Avatar = Avatar;
 })(Endabgabe || (Endabgabe = {}));
@@ -283,21 +313,19 @@ var Endabgabe;
         JOB[JOB["attack"] = 3] = "attack";
     })(JOB = Endabgabe.JOB || (Endabgabe.JOB = {}));
     class Enemy extends Endabgabe.MoveObject {
-        constructor(_name, _size, _position) {
+        constructor(_name, _size, _position, _health, _damage) {
             super(_name, _size, _position);
             this.job = JOB.idle;
+            this.invulnerable = false;
             this.activ = false;
-            this.jump = () => {
-                if (this.grounded) {
-                    this.velocity.y = 20;
-                }
-                fc.Time.game.setTimer(10000, 1, this.jump);
-            };
             this.endstrike = () => {
                 this.setAnimation(JOB.idle);
                 this.fist.mtxLocal.translateX(-1);
                 this.sprite.mtxLocal.translateX(-1);
                 this.fist.grounded = true;
+            };
+            this.setVulnerable = () => {
+                this.invulnerable = false;
             };
             this.sprite = new fcAid.NodeSprite("sprite");
             this.sprite.addComponent(new fc.ComponentTransform());
@@ -305,17 +333,20 @@ var Endabgabe;
             this.sprite.framerate = 7;
             this.addChild(this.sprite);
             this.sprite.mtxLocal.translateY(-_size.y / 2);
+            this.sprite.mtxLocal.translateZ(0.01);
             // this.removeComponent(this.getComponents(fc.ComponentMaterial)[0]);
-            this.jump();
+            //this.jump();
             this.fist = new Endabgabe.MoveObject("fist", new fc.Vector3(_size.x, _size.y, _size.z), new fc.Vector3(0, 0, 0));
             this.fist.grounded = true;
             this.fist.mtxLocal.translateY(_size.y / 2);
             this.sprite.addChild(this.fist);
-            //  this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Enemy.animations["Idle"]);
+            this.sprite.setAnimation(Enemy.animations["Idle"]);
+            this.health = _health;
+            this.damage = _damage;
         }
         update() {
             super.update();
-            if (this.activ) {
+            if (this.activ && this.invulnerable == false) {
                 switch (this.job) {
                     case JOB.walk:
                         this.velocity.x = 2 * (Endabgabe.avatar.mtxWorld.translation.x - this.mtxWorld.translation.x) / Math.abs(Endabgabe.avatar.mtxWorld.translation.x - this.mtxWorld.translation.x);
@@ -357,10 +388,18 @@ var Endabgabe;
                     if (this.fist.checkCollision(Endabgabe.avatar, false)) {
                         console.log("hit");
                         //enemies.removeChild(avatar);
+                        Endabgabe.avatar.newhealth(this.damage);
                     }
                 }
             }
         }
+        /*   public jump = (): void => {
+              if (this.grounded) {
+                  this.velocity.y = 20;
+              }
+              fc.Time.game.setTimer(10000, 1, this.jump);
+          }
+   */
         static generateSprites(_spritesheet) {
             this.animations = {};
             let name = "Walk";
@@ -419,6 +458,18 @@ var Endabgabe;
                     fc.Time.game.setTimer(500, 1, this.endstrike);
                 }
         }
+        setHealth(_damage) {
+            if (this.invulnerable) {
+                return false;
+            }
+            this.invulnerable = true;
+            fc.Time.game.setTimer(500, 1, this.setVulnerable /* function (): void { this.invulnerable  } */);
+            this.health -= _damage;
+            if (this.health <= 0) {
+                return true;
+            }
+            return false;
+        }
     }
     Endabgabe.Enemy = Enemy;
 })(Endabgabe || (Endabgabe = {}));
@@ -439,6 +490,13 @@ var Endabgabe;
 var Endabgabe;
 (function (Endabgabe) {
     var fc = FudgeCore;
+    let GamesConditions;
+    (function (GamesConditions) {
+        GamesConditions[GamesConditions["PLAY"] = 0] = "PLAY";
+        GamesConditions[GamesConditions["GAMEOVER"] = 1] = "GAMEOVER";
+        GamesConditions[GamesConditions["BREAK"] = 2] = "BREAK";
+        GamesConditions[GamesConditions["STARTGAME"] = 3] = "STARTGAME";
+    })(GamesConditions = Endabgabe.GamesConditions || (Endabgabe.GamesConditions = {}));
     window.addEventListener("load", sceneLoad);
     Endabgabe.worldNumber = 0;
     let root;
@@ -446,8 +504,11 @@ var Endabgabe;
     let worldGenerator;
     let movableCamara = false;
     async function sceneLoad(_event) {
+        hndGameConditiones();
         const canvas = document.querySelector("canvas");
+        Endabgabe.gameCondition = GamesConditions.STARTGAME;
         await loaddata("../Data/data.json");
+        Endabgabe.gameState.health = Endabgabe.avatarProperties.startLife;
         root = new fc.Node("root");
         camaraNode = new fc.Node("camara");
         camaraNode.addComponent(new fc.ComponentTransform());
@@ -471,36 +532,40 @@ var Endabgabe;
         document.addEventListener("keypress", Endabgabe.avatar.hndJump);
         document.addEventListener("keypress", Endabgabe.avatar.hadKeyboard);
         document.addEventListener("click", Endabgabe.avatar.strike);
-        canvas.addEventListener("click", canvas.requestPointerLock);
-        canvas.addEventListener("mousemove", Endabgabe.avatar.hndMouse);
+        // canvas.addEventListener("click", canvas.requestPointerLock);
+        //canvas.addEventListener("mousemove", avatar.hndMouse);
+        Endabgabe.Hud.start();
         Endabgabe.viewport = new fc.Viewport();
         Endabgabe.viewport.initialize("Viewport", root, cmpCamera, canvas);
         fc.Debug.log(Endabgabe.viewport);
         Endabgabe.viewport.camera.backgroundColor = fc.Color.CSS("Blue");
         fc.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, hndLoop);
         fc.Loop.start(fc.LOOP_MODE.TIME_GAME, 60);
+        Endabgabe.viewport.draw();
     }
     function hndLoop(_event) {
-        if (!Endabgabe.enemies.getChild(0)) {
-            worldGenerator.newWorld(Endabgabe.worldNumber);
-            movableCamara = true;
-        }
-        if (movableCamara) {
-            if (Endabgabe.avatar.mtxLocal.translation.x > Endabgabe.worldNumber * Endabgabe.worldLength) {
-                camaraNode.mtxLocal.translation = new fc.Vector3(Endabgabe.avatar.mtxWorld.translation.x, 0, 0);
+        if (Endabgabe.gameCondition == GamesConditions.PLAY) {
+            if (!Endabgabe.enemies.getChild(0)) {
+                worldGenerator.newWorld(Endabgabe.worldNumber);
+                movableCamara = true;
             }
-            if (Endabgabe.avatar.mtxLocal.translation.x >= (Endabgabe.worldNumber + 1) * Endabgabe.worldLength) {
-                movableCamara = false;
-                Endabgabe.worldNumber++;
-                camaraNode.mtxLocal.translation = new fc.Vector3(Endabgabe.worldLength * Endabgabe.worldNumber, 0, 0);
-                worldGenerator.oldWorld(Endabgabe.worldNumber);
+            if (movableCamara) {
+                if (Endabgabe.avatar.mtxLocal.translation.x > Endabgabe.worldNumber * Endabgabe.worldLength) {
+                    camaraNode.mtxLocal.translation = new fc.Vector3(Endabgabe.avatar.mtxWorld.translation.x, 0, 0);
+                }
+                if (Endabgabe.avatar.mtxLocal.translation.x >= (Endabgabe.worldNumber + 1) * Endabgabe.worldLength) {
+                    movableCamara = false;
+                    Endabgabe.worldNumber++;
+                    camaraNode.mtxLocal.translation = new fc.Vector3(Endabgabe.worldLength * Endabgabe.worldNumber, 0, 0);
+                    worldGenerator.oldWorld(Endabgabe.worldNumber);
+                }
             }
-        }
-        // worldGenerator.updateWorld(worldNumber);
-        Endabgabe.avatar.update();
-        Endabgabe.viewport.draw();
-        for (let enemy of Endabgabe.enemies.getChildren()) {
-            enemy.update();
+            // worldGenerator.updateWorld(worldNumber);
+            Endabgabe.avatar.update();
+            for (let enemy of Endabgabe.enemies.getChildren()) {
+                enemy.update();
+            }
+            Endabgabe.viewport.draw();
         }
     }
     function genarateWorld(_worldNumber) {
@@ -521,13 +586,132 @@ var Endabgabe;
     async function loaddata(_url) {
         let response = await fetch(_url);
         let data = await response.json();
-        await loadWoldData(data.world);
+        await loadWoldData(data.worldProperties);
+        Endabgabe.avatarProperties = data.avatarProperties;
+        Endabgabe.enemyProperties = data.enemyProperties;
     }
     async function loadWoldData(_world) {
         Endabgabe.unit = _world.unit;
         Endabgabe.worldLength = _world.worldLength;
         Endabgabe.worldhight = _world.worldhight;
     }
+    function hndGameConditiones() {
+        let buttenDiv = document.getElementById("gameButtenDiv");
+        let restartButten = document.createElement("button");
+        let butten = document.createElement("button");
+        restartButten.value = "restart";
+        restartButten.innerHTML = "restart";
+        butten.id = "RButten";
+        buttenDiv.appendChild(restartButten);
+        butten.value = "start";
+        butten.innerHTML = "start";
+        butten.id = "PSButten";
+        buttenDiv.appendChild(butten);
+        butten.addEventListener("click", hndGameButtons);
+        restartButten.addEventListener("click", hndGameButtons);
+        function hndGameButtons(_event) {
+            switch (_event.currentTarget.value) {
+                case "start":
+                    Endabgabe.gameCondition = GamesConditions.PLAY;
+                    butten.value = "pause";
+                    butten.innerHTML = "pause";
+                    break;
+                case "pause":
+                    Endabgabe.gameCondition = GamesConditions.BREAK;
+                    butten.value = "start";
+                    butten.innerHTML = "start";
+                    break;
+                case "restart":
+                    let gameOverText = document.getElementById("gameover");
+                    if (gameOverText) {
+                        gameOverText.remove();
+                    }
+                    buttenDiv.removeChild(butten);
+                    buttenDiv.removeChild(restartButten);
+                    sceneLoad();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    Endabgabe.hndGameConditiones = hndGameConditiones;
+    function hndGameOver() {
+        Endabgabe.gameCondition = GamesConditions.GAMEOVER;
+        let butten = document.getElementById("PSButten");
+        if (butten) {
+            butten.style.display = "none";
+        }
+        let buttenDiv = document.getElementById("gameButtenDiv");
+        let gameOverText = document.createElement("p");
+        gameOverText.id = "gameover";
+        gameOverText.innerHTML = "Game Over";
+        buttenDiv.appendChild(gameOverText);
+    }
+    Endabgabe.hndGameOver = hndGameOver;
+})(Endabgabe || (Endabgabe = {}));
+var Endabgabe;
+(function (Endabgabe) {
+    var fcui = FudgeUserInterface;
+    var fc = FudgeCore;
+    class GameState extends fc.Mutable {
+        constructor() {
+            super(...arguments);
+            this.health = 0;
+            this.score = 0;
+        }
+        reduceMutator(_mutator) { }
+    }
+    Endabgabe.GameState = GameState;
+    Endabgabe.gameState = new GameState();
+    class Hud {
+        static start() {
+            let gameHud = document.querySelector("div#hud");
+            Hud.controller = new fcui.Controller(Endabgabe.gameState, gameHud);
+            Hud.controller.updateUserInterface();
+            /* let startButten: HTMLButtonElement = document.createElement("button");
+            startButten.id = "start";
+            startButten.innerHTML = "start";
+            startButten.addEventListener("click", hndGameConditions);
+            let breakButten: HTMLButtonElement = document.createElement("button");
+            breakButten.id = "break";
+            breakButten.innerHTML = "break";
+            breakButten.addEventListener("click", hndGameConditions);
+            let restartButten: HTMLButtonElement = document.createElement("button");
+            restartButten.id = "restart";
+            restartButten.innerHTML = "restart";
+            restartButten.addEventListener("click", hndGameConditions);
+
+            gameHud.appendChild(startButten);
+            function hndGameConditions(_event: Event): void {
+                let target: HTMLButtonElement = (<HTMLButtonElement>_event.currentTarget);
+
+                switch (target.id) {
+                    case "start":
+                        gameCondition = GamesConditions.PLAY;
+                        gameHud.removeChild(startButten);
+                        gameHud.appendChild(breakButten);
+                        //gameHud.removeChild(restartButten);
+                        break;
+                    case "break":
+                        gameCondition = GamesConditions.BREAK;
+                        gameHud.appendChild(startButten);
+                        gameHud.removeChild(breakButten);
+                        //gameHud.appendChild(restartButten);
+                        break;
+                    case "restart":
+                        gameHud.removeChild(breakButten);
+                        //gameHud.appendChild(restartButten);
+                        sceneLoad();
+                        break;
+                    default:
+                        break;
+                }
+            }
+ */
+        }
+    }
+    Endabgabe.Hud = Hud;
 })(Endabgabe || (Endabgabe = {}));
 var Endabgabe;
 (function (Endabgabe) {
@@ -551,10 +735,18 @@ var Endabgabe;
             levelRoot.addChild(this.tempWall);
             levelRoot.addChild(new Endabgabe.GameObject("RightWall", new fc.Vector3(Endabgabe.unit, Endabgabe.worldhight, Endabgabe.unit), new fc.Vector3(23 + _position.x, 0 + _position.y, 0 + _position.z)));
             levelRoot.addChild(new Endabgabe.GameObject("Ceiling", new fc.Vector3(Endabgabe.worldLength, Endabgabe.unit, Endabgabe.unit), new fc.Vector3(0 + _position.x, 17 + _position.y, 0 + _position.z)));
+            let length = fc.Random.default.getRange(Endabgabe.unit, Endabgabe.worldLength / 2);
+            let xPos = fc.Random.default.getRange(-Endabgabe.worldLength / 2 + length + Endabgabe.unit, Endabgabe.worldLength / 2 - length - Endabgabe.unit);
+            let jumpDistance = Endabgabe.unit;
+            for (let i = 0; i < fc.Random.default.getRange(0, 4); i++) {
+                xPos = fc.Random.default.getRange(xPos + jumpDistance, -(xPos + jumpDistance));
+                length = fc.Random.default.getRange(Endabgabe.unit, Endabgabe.worldLength / 2);
+                levelRoot.addChild(new Endabgabe.Floor("Ground", new fc.Vector3(length, Endabgabe.unit, Endabgabe.unit), new fc.Vector3(xPos + _position.x, (3 - (Endabgabe.unit - Endabgabe.unit / 4) * i) * -Endabgabe.unit * 2 + _position.y, 0 + _position.z), mtrWall));
+            }
             return levelRoot;
         }
         createEnemie(_level) {
-            return new Endabgabe.Enemy("enemy", new fc.Vector3(Endabgabe.unit, Endabgabe.unit, 1), new fc.Vector3(fc.Random.default.getRange(5, 10) + Endabgabe.worldLength * _level, 0, 0));
+            return new Endabgabe.Enemy("enemy", new fc.Vector3(Endabgabe.unit, Endabgabe.unit, 1), new fc.Vector3(fc.Random.default.getRange(5, 10) + Endabgabe.worldLength * _level, 0, 0), Endabgabe.enemyProperties.startLife + _level * Endabgabe.enemyProperties.lifePerLevel, Math.floor(Endabgabe.enemyProperties.damage + _level * Endabgabe.enemyProperties.damagePerLevel));
         }
         newWorld(_worldNumber) {
             Endabgabe.enemies.addChild(this.createEnemie(_worldNumber + 1));

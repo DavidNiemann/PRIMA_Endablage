@@ -1,15 +1,15 @@
 {
-    "avatar": {
-        "startLife": 5000,
-        "damage": 100
+    "avatarProperties": {
+        "startLife": 10,
+        "damage": 1
     },
-    "enemy": {
-        "startLife": 1000,
-        "lifePerLevel": 500,
-        "damage": 100,
-        "damagePerLevel": 100
+    "enemyProperties": {
+        "startLife": 3,
+        "lifePerLevel": 1,
+        "damage": 1,
+        "damagePerLevel": 0.2
     },
-    "world": {
+    "worldProperties": {
         "unit": 2,
         "worldLength": 50,
         "worldhight": 40

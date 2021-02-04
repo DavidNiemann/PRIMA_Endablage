@@ -1,14 +1,14 @@
 namespace Endabgabe {
 
     // let unit: number = 2;
-    export interface Enemy {
+    export interface EnemyProperties {
         startLife: number;
         lifePerLevel: number;
         damage: number;
         damagePerLevel: number;
     }
 
-    export interface Avatar {
+    export interface AvatarProperties {
         startLife: number;
         damage: number;
     }
@@ -20,9 +20,9 @@ namespace Endabgabe {
     }
 
     export interface Data {
-        avatar: Avatar;
-        enemy: Enemy;
-        world: World;
+        avatarProperties: AvatarProperties;
+        enemyProperties: EnemyProperties;
+        worldProperties: World;
     }
 
     /*  let avatar: Avatar = {
