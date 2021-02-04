@@ -61,8 +61,8 @@ namespace Endabgabe {
 
         enemies.addChild(worldGenerator.createEnemie(worldNumber));
         (<Enemy>enemies.getChild(0)).activ = true;
-
-
+        
+        
 
         let cmpCamera: fc.ComponentCamera = new fc.ComponentCamera();
         cmpCamera.pivot.translateZ(worldLength);
@@ -74,7 +74,9 @@ namespace Endabgabe {
         document.addEventListener("click", avatar.strike);
         // canvas.addEventListener("click", canvas.requestPointerLock);
         //canvas.addEventListener("mousemove", avatar.hndMouse);
+
         Hud.start();
+        Hud.setHubhealth();
         viewport = new fc.Viewport();
         viewport.initialize("Viewport", root, cmpCamera, canvas);
         fc.Debug.log(viewport);
@@ -89,7 +91,7 @@ namespace Endabgabe {
         if (gameCondition == GamesConditions.PLAY) {
 
             if (!enemies.getChild(0)) {
-                worldGenerator.newWorld(worldNumber);
+                worldGenerator.createNewWorld(worldNumber);
                 movableCamara = true;
             }
             if (movableCamara) {
@@ -100,7 +102,7 @@ namespace Endabgabe {
                     movableCamara = false;
                     worldNumber++;
                     camaraNode.mtxLocal.translation = new fc.Vector3(worldLength * worldNumber, 0, 0);
-                    worldGenerator.oldWorld(worldNumber);
+                    worldGenerator.deleteoldWorld(worldNumber);
                 }
 
             }
@@ -200,7 +202,8 @@ namespace Endabgabe {
                     }
                     buttenDiv.removeChild(butten);
                     buttenDiv.removeChild(restartButten);
-
+                    worldNumber = 0;
+                    gameState.score = 0;
 
                     sceneLoad();
                     break;
@@ -214,11 +217,13 @@ namespace Endabgabe {
     export function hndGameOver(): void {
         gameCondition = GamesConditions.GAMEOVER;
         let butten: HTMLButtonElement = (<HTMLButtonElement>document.getElementById("PSButten"));
-        if (butten) {butten.style.display = "none"; }
+        if (butten) { butten.style.display = "none"; }
         let buttenDiv: HTMLDivElement = (<HTMLDivElement>document.getElementById("gameButtenDiv"));
         let gameOverText: HTMLParagraphElement = document.createElement("p");
         gameOverText.id = "gameover";
         gameOverText.innerHTML = "Game Over"; buttenDiv.appendChild(gameOverText);
     }
+
+   
 
 }

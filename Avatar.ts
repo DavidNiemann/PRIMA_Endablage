@@ -114,9 +114,11 @@ namespace Endabgabe {
                     //console.log(this.fist.rect, enemy.rect , this.rect);
                     if (this.fist.checkCollision(enemy, false)) {
                         // enemies.removeChild(enemy);
+                        
                         if (enemy.setHealth(avatarProperties.damage)) {
                             enemies.removeChild(enemy);
                             gameState.score += 1;
+                         
                         }
                     }
                 }

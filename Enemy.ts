@@ -9,10 +9,9 @@ namespace Endabgabe {
         private fist: MoveObject;
         private job: JOB = JOB.idle;
         private sprite: fcAid.NodeSprite;
-        private health: number;
+        public health: number;
         private damage: number;
         private invulnerable: boolean = false;
-        public healthBar: fc.Node;
         
         public activ: boolean = false;
 
@@ -57,7 +56,7 @@ namespace Endabgabe {
                     default:
                         break;
                 }
-
+                
                 if (avatar.mtxWorld.translation.x - this.mtxWorld.translation.x < 0) {
                     this.flip(true);
                 } else {
@@ -196,10 +195,12 @@ namespace Endabgabe {
             if (this.invulnerable) {
                 return false;
             }
+          
             this.invulnerable = true;
             fc.Time.game.setTimer(500, 1, this.setVulnerable/* function (): void { this.invulnerable  } */);
             this.health -= _damage;
-         
+            gameState.currentEnemyHealth -= avatarProperties.damage;
+            Hud.hndHealthBar();
             if (this.health <= 0) {
                 return true;
             }

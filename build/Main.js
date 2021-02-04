@@ -465,6 +465,8 @@ var Endabgabe;
             this.invulnerable = true;
             fc.Time.game.setTimer(500, 1, this.setVulnerable /* function (): void { this.invulnerable  } */);
             this.health -= _damage;
+            Endabgabe.gameState.currentEnemyHealth -= Endabgabe.avatarProperties.damage;
+            Endabgabe.Hud.hndHealthBar();
             if (this.health <= 0) {
                 return true;
             }
@@ -535,6 +537,7 @@ var Endabgabe;
         // canvas.addEventListener("click", canvas.requestPointerLock);
         //canvas.addEventListener("mousemove", avatar.hndMouse);
         Endabgabe.Hud.start();
+        Endabgabe.Hud.setHubhealth();
         Endabgabe.viewport = new fc.Viewport();
         Endabgabe.viewport.initialize("Viewport", root, cmpCamera, canvas);
         fc.Debug.log(Endabgabe.viewport);
@@ -546,7 +549,7 @@ var Endabgabe;
     function hndLoop(_event) {
         if (Endabgabe.gameCondition == GamesConditions.PLAY) {
             if (!Endabgabe.enemies.getChild(0)) {
-                worldGenerator.newWorld(Endabgabe.worldNumber);
+                worldGenerator.createNewWorld(Endabgabe.worldNumber);
                 movableCamara = true;
             }
             if (movableCamara) {
@@ -557,7 +560,7 @@ var Endabgabe;
                     movableCamara = false;
                     Endabgabe.worldNumber++;
                     camaraNode.mtxLocal.translation = new fc.Vector3(Endabgabe.worldLength * Endabgabe.worldNumber, 0, 0);
-                    worldGenerator.oldWorld(Endabgabe.worldNumber);
+                    worldGenerator.deleteoldWorld(Endabgabe.worldNumber);
                 }
             }
             // worldGenerator.updateWorld(worldNumber);
@@ -628,6 +631,8 @@ var Endabgabe;
                     }
                     buttenDiv.removeChild(butten);
                     buttenDiv.removeChild(restartButten);
+                    Endabgabe.worldNumber = 0;
+                    Endabgabe.gameState.score = 0;
                     sceneLoad();
                     break;
                 default:
@@ -659,6 +664,8 @@ var Endabgabe;
             super(...arguments);
             this.health = 0;
             this.score = 0;
+            this.enemyHealth = 1;
+            this.currentEnemyHealth = 1;
         }
         reduceMutator(_mutator) { }
     }
@@ -669,46 +676,19 @@ var Endabgabe;
             let gameHud = document.querySelector("div#hud");
             Hud.controller = new fcui.Controller(Endabgabe.gameState, gameHud);
             Hud.controller.updateUserInterface();
-            /* let startButten: HTMLButtonElement = document.createElement("button");
-            startButten.id = "start";
-            startButten.innerHTML = "start";
-            startButten.addEventListener("click", hndGameConditions);
-            let breakButten: HTMLButtonElement = document.createElement("button");
-            breakButten.id = "break";
-            breakButten.innerHTML = "break";
-            breakButten.addEventListener("click", hndGameConditions);
-            let restartButten: HTMLButtonElement = document.createElement("button");
-            restartButten.id = "restart";
-            restartButten.innerHTML = "restart";
-            restartButten.addEventListener("click", hndGameConditions);
-
-            gameHud.appendChild(startButten);
-            function hndGameConditions(_event: Event): void {
-                let target: HTMLButtonElement = (<HTMLButtonElement>_event.currentTarget);
-
-                switch (target.id) {
-                    case "start":
-                        gameCondition = GamesConditions.PLAY;
-                        gameHud.removeChild(startButten);
-                        gameHud.appendChild(breakButten);
-                        //gameHud.removeChild(restartButten);
-                        break;
-                    case "break":
-                        gameCondition = GamesConditions.BREAK;
-                        gameHud.appendChild(startButten);
-                        gameHud.removeChild(breakButten);
-                        //gameHud.appendChild(restartButten);
-                        break;
-                    case "restart":
-                        gameHud.removeChild(breakButten);
-                        //gameHud.appendChild(restartButten);
-                        sceneLoad();
-                        break;
-                    default:
-                        break;
-                }
+        }
+        static hndHealthBar() {
+            let currentHealth = document.getElementById("healthEnemy");
+            currentHealth.style.width = 160 * Endabgabe.gameState.currentEnemyHealth / Endabgabe.gameState.enemyHealth + "px";
+        }
+        static setHubhealth() {
+            let health = 0;
+            for (let enemy of Endabgabe.enemies.getChildren()) {
+                health += enemy.health;
             }
- */
+            Endabgabe.gameState.enemyHealth = health;
+            Endabgabe.gameState.currentEnemyHealth = health;
+            Hud.hndHealthBar();
         }
     }
     Endabgabe.Hud = Hud;
@@ -748,7 +728,7 @@ var Endabgabe;
         createEnemie(_level) {
             return new Endabgabe.Enemy("enemy", new fc.Vector3(Endabgabe.unit, Endabgabe.unit, 1), new fc.Vector3(fc.Random.default.getRange(5, 10) + Endabgabe.worldLength * _level, 0, 0), Endabgabe.enemyProperties.startLife + _level * Endabgabe.enemyProperties.lifePerLevel, Math.floor(Endabgabe.enemyProperties.damage + _level * Endabgabe.enemyProperties.damagePerLevel));
         }
-        newWorld(_worldNumber) {
+        createNewWorld(_worldNumber) {
             Endabgabe.enemies.addChild(this.createEnemie(_worldNumber + 1));
             Endabgabe.gameWorld.addChild(this.genarateWorld(_worldNumber + 1, fc.Vector3.X((_worldNumber + 1) * Endabgabe.worldLength)));
             /*gameWorld.getChildrenByName("level" + _worldNumber)[0].removeChild(gameWorld.getChildrenByName("level" + _worldNumber)[0].getChildrenByName("RightWall")[0]);
@@ -756,7 +736,7 @@ var Endabgabe;
             Endabgabe.gameWorld.getChild(0).removeChild(Endabgabe.gameWorld.getChild(0).getChildrenByName("RightWall")[0]);
             Endabgabe.gameWorld.getChild(1).removeChild(this.tempWall);
         }
-        oldWorld(_worldNumber) {
+        deleteoldWorld(_worldNumber) {
             Endabgabe.gameWorld.getChild(1).addChild(this.tempWall);
             Endabgabe.gameWorld.removeChild(Endabgabe.gameWorld.getChild(0));
             for (let enemy of Endabgabe.enemies.getChildren()) {
@@ -765,6 +745,7 @@ var Endabgabe;
             }
             /* gameWorld.getChildrenByName("level" + _worldNumber + 1 )[0].addChild(this.tempWall);
             gameWorld.removeChild(gameWorld.getChildrenByName("level" + _worldNumber )[0]); */
+            Endabgabe.Hud.setHubhealth();
         }
     }
     Endabgabe.WorldGenarator = WorldGenarator;

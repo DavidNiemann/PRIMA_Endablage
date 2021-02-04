@@ -1,13 +1,14 @@
 :root{
     --canvasheight:  600px;
     --canvaswidth:  800px;
+    --livebarwidth:  calc( var(--canvaswidth) /5);
 }
 input{
     appearance: textfield;
 }
 div#hud {
     position: absolute;
-    top: 0px;
+    top: 20px;
     left: 10px;
     font-size: large;
 }
@@ -36,3 +37,34 @@ canvas {
     position: absolute;  
     left: calc( var(--canvaswidth) - 70px) ;
 }
+#enemyHealthDiv{
+ 
+    position: absolute;  
+    left: calc( var(--canvaswidth) / 2 - 70px) ;
+    
+}
+
+#maxHealthEnemy{
+    background-color: white;
+    height: 20px;
+    width:  calc( var(--livebarwidth));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#healthEnemy{
+    position: absolute;
+    left: 0;
+    height: 20px;
+    background-color: red;
+    width:  calc( var(--livebarwidth)/3) ;
+   
+}
+#enemyHealth{
+    position: absolute;
+    left: calc( var(--livebarwidth) /2 - 20px);
+    z-index: 10;
+ 
+}
+  

@@ -24,6 +24,8 @@ namespace Endabgabe {
 
         }
 
+        
+
         public genarateWorld(_levelNumber: number, _position: fc.Vector3): fc.Node {
             let mtrWall: fc.Material = new fc.Material("Wall", fc.ShaderTexture, new fc.CoatTextured(null, this.txtFloor));
             let levelRoot: fc.Node = new fc.Node("level" + _levelNumber);
@@ -33,15 +35,15 @@ namespace Endabgabe {
             levelRoot.addChild(new GameObject("RightWall", new fc.Vector3(unit, worldhight, unit), new fc.Vector3(23 + _position.x, 0 + _position.y, 0 + _position.z)));
             levelRoot.addChild(new GameObject("Ceiling", new fc.Vector3(worldLength, unit, unit), new fc.Vector3(0 + _position.x, 17 + _position.y, 0 + _position.z)));
 
-            let length: number = fc.Random.default.getRange(unit, worldLength / 2 );
-           
-            let xPos: number = fc.Random.default.getRange(-worldLength / 2 + length + unit, worldLength / 2 - length - unit );
+            let length: number = fc.Random.default.getRange(unit, worldLength / 2);
+
+            let xPos: number = fc.Random.default.getRange(-worldLength / 2 + length + unit, worldLength / 2 - length - unit);
             let jumpDistance: number = unit;
             for (let i: number = 0; i < fc.Random.default.getRange(0, 4); i++) {
                 xPos = fc.Random.default.getRange(xPos + jumpDistance, -(xPos + jumpDistance));
-                length = fc.Random.default.getRange(unit, worldLength / 2 );     
+                length = fc.Random.default.getRange(unit, worldLength / 2);
                 levelRoot.addChild(new Floor("Ground", new fc.Vector3(length, unit, unit), new fc.Vector3(xPos + _position.x, (3 - (unit - unit / 4) * i) * -unit * 2 + _position.y, 0 + _position.z), mtrWall));
-              
+
             }
 
 
@@ -53,7 +55,7 @@ namespace Endabgabe {
 
         }
 
-        public newWorld(_worldNumber: number): void {
+        public createNewWorld(_worldNumber: number): void {
             enemies.addChild(this.createEnemie(_worldNumber + 1));
             gameWorld.addChild(this.genarateWorld(_worldNumber + 1, fc.Vector3.X((_worldNumber + 1) * worldLength)));
             /*gameWorld.getChildrenByName("level" + _worldNumber)[0].removeChild(gameWorld.getChildrenByName("level" + _worldNumber)[0].getChildrenByName("RightWall")[0]);
@@ -62,7 +64,7 @@ namespace Endabgabe {
             gameWorld.getChild(1).removeChild(this.tempWall);
         }
 
-        public oldWorld(_worldNumber?: number): void {
+        public deleteoldWorld(_worldNumber?: number): void {
             gameWorld.getChild(1).addChild(this.tempWall);
             gameWorld.removeChild(gameWorld.getChild(0));
             for (let enemy of enemies.getChildren() as Enemy[]) {
@@ -71,11 +73,12 @@ namespace Endabgabe {
             }
             /* gameWorld.getChildrenByName("level" + _worldNumber + 1 )[0].addChild(this.tempWall);
             gameWorld.removeChild(gameWorld.getChildrenByName("level" + _worldNumber )[0]); */
-
+            Hud.setHubhealth();
         }
 
+       
         /*     public loadWorldData() {
-    
+     
             } */
 
     }

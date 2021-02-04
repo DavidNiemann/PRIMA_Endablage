@@ -5,7 +5,8 @@ namespace Endabgabe {
     export class GameState extends fc.Mutable {
         public health: number = 0;
         public score: number = 0;
-
+        public enemyHealth: number = 1;
+        public currentEnemyHealth: number = 1;
         protected reduceMutator(_mutator: fc.Mutator): void {/* */ }
     }
 
@@ -19,63 +20,31 @@ namespace Endabgabe {
             let gameHud: HTMLDivElement = document.querySelector("div#hud");
             Hud.controller = new fcui.Controller(gameState, gameHud);
             Hud.controller.updateUserInterface();
-          
-            /* let startButten: HTMLButtonElement = document.createElement("button");
-            startButten.id = "start";
-            startButten.innerHTML = "start";
-            startButten.addEventListener("click", hndGameConditions);
-            let breakButten: HTMLButtonElement = document.createElement("button");
-            breakButten.id = "break";
-            breakButten.innerHTML = "break";
-            breakButten.addEventListener("click", hndGameConditions);
-            let restartButten: HTMLButtonElement = document.createElement("button");
-            restartButten.id = "restart";
-            restartButten.innerHTML = "restart";
-            restartButten.addEventListener("click", hndGameConditions);
 
-            gameHud.appendChild(startButten);
-            function hndGameConditions(_event: Event): void {
-                let target: HTMLButtonElement = (<HTMLButtonElement>_event.currentTarget);
 
-                switch (target.id) {
-                    case "start":
-                        gameCondition = GamesConditions.PLAY;
-                        gameHud.removeChild(startButten);
-                        gameHud.appendChild(breakButten);
-                        //gameHud.removeChild(restartButten);
-                        break;
-                    case "break":
-                        gameCondition = GamesConditions.BREAK;
-                        gameHud.appendChild(startButten);
-                        gameHud.removeChild(breakButten);
-                        //gameHud.appendChild(restartButten);
-                        break;
-                    case "restart":
-                        gameHud.removeChild(breakButten);
-                        //gameHud.appendChild(restartButten);
-                        sceneLoad();
-                        break;
-                    default:
-                        break;
-                }
-            }
- */
-
+         
+ 
         }
-        /*  public static hndGameOver(): void {
-             let gameHud: HTMLDivElement = document.querySelector("div#hud");
-           let gameHud: HTMLDivElement = document.querySelector("div#hud");
-             let gameOverText: HTMLParagraphElement = document.createElement("p");
-             gameOverText.id = "gameOverText";
-             gameOverText.innerHTML = "GAME OVER";
-             gameHud.appendChild(gameOverText);
-             gameHud.removeChild(breakButten);
-             let restartButten: HTMLButtonElement = document.createElement("button");
-             restartButten.id = "restart";
-             restartButten.innerHTML = "restart";
-             restartButten.addEventListener("click", sceneLoad;
-             gameHud.appendChild(restartButten);
-         }*/
+       
+        public static hndHealthBar(): void {
+            let currentHealth: HTMLDivElement = (<HTMLDivElement>document.getElementById("healthEnemy"));
+            currentHealth.style.width = 160 * gameState.currentEnemyHealth / gameState.enemyHealth + "px";
+        }
+        public static setHubhealth(): void {
+            let health: number = 0;
+            for (let enemy of enemies.getChildren() as Enemy[]) {
+
+                health += enemy.health;
+
+            }
+
+            gameState.enemyHealth = health;
+            gameState.currentEnemyHealth = health;
+            Hud.hndHealthBar();
+        }
+
     }
+
+
 
 }
