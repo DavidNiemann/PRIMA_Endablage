@@ -33,6 +33,18 @@ var Endabgabe;
             this.grounded = false;
             this.acceleration = 0.9;
             this.velocity = fc.Vector3.ZERO();
+            this.audioShword = new fc.Audio("../GameSounds/mixkit_fast_sword.wav");
+            this.cmpShwordAudio = new fc.ComponentAudio(this.audioShword, false, false);
+            this.cmpShwordAudio.connect(true);
+            this.cmpShwordAudio.volume = 1;
+            this.audioHit = new fc.Audio("../GameSounds/mixkit_Hit.mp3");
+            this.cmpHitAudio = new fc.ComponentAudio(this.audioHit, false, false);
+            this.cmpHitAudio.connect(true);
+            this.cmpHitAudio.volume = 1;
+            this.audioStep = new fc.Audio("../GameSounds/mixkit_step.wav");
+            this.cmpStepAudio = new fc.ComponentAudio(this.audioStep, true, false);
+            this.cmpStepAudio.connect(true);
+            this.cmpStepAudio.volume = 1;
         }
         move() {
             let frameTime = fc.Loop.timeFrameGame / 1000;
@@ -162,14 +174,17 @@ var Endabgabe;
                 }
             };
             this.strike = () => {
-                if (this.grounded)
-                    if (this.fist.grounded) {
-                        this.fist.grounded = false;
-                        this.fist.mtxLocal.translateX(Endabgabe.unit);
-                        this.sprite.mtxLocal.translateX(Endabgabe.unit);
-                        this.setAnimation(AvatarStatus.strike);
-                        fc.Time.game.setTimer(500, 1, this.endstrike);
-                    }
+                if (Endabgabe.gameCondition == Endabgabe.GamesConditions.PLAY) {
+                    if (this.grounded)
+                        if (this.fist.grounded) {
+                            this.cmpShwordAudio.play(true);
+                            this.fist.grounded = false;
+                            this.fist.mtxLocal.translateX(Endabgabe.unit);
+                            this.sprite.mtxLocal.translateX(Endabgabe.unit);
+                            this.setAnimation(AvatarStatus.strike);
+                            fc.Time.game.setTimer(500, 1, this.endstrike);
+                        }
+                }
             };
             this.endstrike = () => {
                 this.setAnimation(AvatarStatus.idle);
@@ -202,6 +217,15 @@ var Endabgabe;
             this.sprite.addChild(this.fist);
             //this.removeComponent(this.getComponents(fc.ComponentMaterial)[0]);
             //this.fist.removeComponent(this.fist.getComponents(fc.ComponentMaterial)[0]);
+            /*  this.audioShword = new fc.Audio("../GameSounds/mixkit_fast_sword.wav");
+             this.cmpShwordAudio = new fc.ComponentAudio(this.audioShword, false, false);
+             this.cmpShwordAudio.connect(true);
+             this.cmpShwordAudio.volume = 1;
+ 
+             this.audioHit = new fc.Audio("../GameSounds/mixkit_Hit.mp3");
+             this.cmpHitAudio = new fc.ComponentAudio(this.audioHit, false, false);
+             this.cmpHitAudio.connect(true);
+             this.cmpHitAudio.volume = 1; */
         }
         static generateSprites(_spritesheet) {
             this.animations = {};
@@ -254,7 +278,9 @@ var Endabgabe;
         newhealth(_damage) {
             if (this.invulnerable == false) {
                 Endabgabe.gameState.health -= _damage;
+                this.cmpHitAudio.play(true);
                 if (Endabgabe.gameState.health <= 0) {
+                    this.cmpStepAudio.play(false);
                     Endabgabe.hndGameOver();
                 }
                 this.invulnerable = true;
@@ -274,14 +300,17 @@ var Endabgabe;
                         this.avatarStatus = AvatarStatus.strike;
                         break;
                     case AvatarStatus.idle:
+                        this.cmpStepAudio.play(false);
                         this.sprite.setAnimation(Avatar.animations["Idle"]);
                         this.avatarStatus = AvatarStatus.idle;
                         break;
                     case AvatarStatus.walk:
+                        this.cmpStepAudio.play(true);
                         this.sprite.setAnimation(Avatar.animations["Walk"]);
                         this.avatarStatus = AvatarStatus.walk;
                         break;
                     case AvatarStatus.jump:
+                        this.cmpStepAudio.play(false);
                         this.sprite.setAnimation(Avatar.animations["jump"]);
                         this.avatarStatus = AvatarStatus.jump;
                         break;
@@ -424,14 +453,17 @@ var Endabgabe;
                 this.job = _status;
                 switch (_status) {
                     case JOB.idle:
+                        this.cmpStepAudio.play(false);
                         this.sprite.setAnimation(Enemy.animations["Idle"]);
                         this.job = JOB.idle;
                         break;
                     case JOB.walk:
+                        this.cmpStepAudio.play(true);
                         this.sprite.setAnimation(Enemy.animations["Walk"]);
                         this.job = JOB.walk;
                         break;
                     case JOB.jump:
+                        this.cmpStepAudio.play(false);
                         this.sprite.setAnimation(Enemy.animations["jump"]);
                         this.job = JOB.jump;
                         break;
@@ -450,6 +482,7 @@ var Endabgabe;
         strike() {
             if (this.grounded)
                 if (this.fist.grounded) {
+                    this.cmpShwordAudio.play(true);
                     this.setAnimation(JOB.attack);
                     this.fist.grounded = false;
                     this.fist.mtxLocal.translateX(1);
@@ -465,9 +498,11 @@ var Endabgabe;
             this.invulnerable = true;
             fc.Time.game.setTimer(500, 1, this.setVulnerable /* function (): void { this.invulnerable  } */);
             this.health -= _damage;
+            this.cmpHitAudio.play(true);
             Endabgabe.gameState.currentEnemyHealth -= Endabgabe.avatarProperties.damage;
             Endabgabe.Hud.hndHealthBar();
             if (this.health <= 0) {
+                this.cmpStepAudio.play(false);
                 return true;
             }
             return false;
@@ -534,7 +569,7 @@ var Endabgabe;
         document.addEventListener("keypress", Endabgabe.avatar.hndJump);
         document.addEventListener("keypress", Endabgabe.avatar.hadKeyboard);
         document.addEventListener("click", Endabgabe.avatar.strike);
-        // canvas.addEventListener("click", canvas.requestPointerLock);
+        //canvas.addEventListener("click", canvas.requestPointerLock);
         //canvas.addEventListener("mousemove", avatar.hndMouse);
         Endabgabe.Hud.start();
         Endabgabe.Hud.setHubhealth();

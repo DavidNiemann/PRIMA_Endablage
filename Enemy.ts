@@ -56,7 +56,7 @@ namespace Endabgabe {
                     default:
                         break;
                 }
-                
+                  
                 if (avatar.mtxWorld.translation.x - this.mtxWorld.translation.x < 0) {
                     this.flip(true);
                 } else {
@@ -93,6 +93,7 @@ namespace Endabgabe {
                     this.fist.rect.position.x = this.fist.mtxWorld.translation.x - this.fist.rect.size.x / 2;
                     this.fist.rect.position.y = this.fist.mtxWorld.translation.y - this.fist.rect.size.y / 2;
                     if (this.fist.checkCollision(avatar, false)) {
+                       
                         console.log("hit");
                         //enemies.removeChild(avatar);
                         avatar.newhealth(this.damage);
@@ -141,14 +142,17 @@ namespace Endabgabe {
                 switch (_status) {
 
                     case JOB.idle:
+                        this.cmpStepAudio.play(false);
                         this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Enemy.animations["Idle"]);
                         this.job = JOB.idle;
                         break;
                     case JOB.walk:
+                        this.cmpStepAudio.play(true);
                         this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Enemy.animations["Walk"]);
                         this.job = JOB.walk;
                         break;
                     case JOB.jump:
+                        this.cmpStepAudio.play(false);
                         this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Enemy.animations["jump"]);
                         this.job = JOB.jump;
                         break;
@@ -173,6 +177,7 @@ namespace Endabgabe {
             if (this.grounded)
 
                 if (this.fist.grounded) {
+                    this.cmpShwordAudio.play(true);
                     this.setAnimation(JOB.attack);
                     this.fist.grounded = false;
                     this.fist.mtxLocal.translateX(1);
@@ -199,9 +204,11 @@ namespace Endabgabe {
             this.invulnerable = true;
             fc.Time.game.setTimer(500, 1, this.setVulnerable/* function (): void { this.invulnerable  } */);
             this.health -= _damage;
+            this.cmpHitAudio.play(true);
             gameState.currentEnemyHealth -= avatarProperties.damage;
             Hud.hndHealthBar();
             if (this.health <= 0) {
+                this.cmpStepAudio.play(false);
                 return true;
             }
             return false;

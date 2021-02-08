@@ -44,6 +44,15 @@ namespace Endabgabe {
             this.sprite.addChild(this.fist);
             //this.removeComponent(this.getComponents(fc.ComponentMaterial)[0]);
             //this.fist.removeComponent(this.fist.getComponents(fc.ComponentMaterial)[0]);
+           /*  this.audioShword = new fc.Audio("../GameSounds/mixkit_fast_sword.wav");
+            this.cmpShwordAudio = new fc.ComponentAudio(this.audioShword, false, false);
+            this.cmpShwordAudio.connect(true);
+            this.cmpShwordAudio.volume = 1;
+
+            this.audioHit = new fc.Audio("../GameSounds/mixkit_Hit.mp3");
+            this.cmpHitAudio = new fc.ComponentAudio(this.audioHit, false, false);
+            this.cmpHitAudio.connect(true);
+            this.cmpHitAudio.volume = 1; */
         }
 
 
@@ -81,6 +90,7 @@ namespace Endabgabe {
                     );
                     this.velocity.x = this.control.getOutput();
                     this.hnddDirection(this.velocity);
+                  
                 }
         }
 
@@ -114,11 +124,11 @@ namespace Endabgabe {
                     //console.log(this.fist.rect, enemy.rect , this.rect);
                     if (this.fist.checkCollision(enemy, false)) {
                         // enemies.removeChild(enemy);
-                        
+
                         if (enemy.setHealth(avatarProperties.damage)) {
                             enemies.removeChild(enemy);
                             gameState.score += 1;
-                         
+
                         }
                     }
                 }
@@ -133,17 +143,23 @@ namespace Endabgabe {
                 this.setAnimation(AvatarStatus.walk);
             }
 
+   
+            
         }
         public strike = (): void => {
-            if (this.grounded)
-                if (this.fist.grounded) {
-                    this.fist.grounded = false;
-                    this.fist.mtxLocal.translateX(unit);
-                    this.sprite.mtxLocal.translateX(unit);
-                    this.setAnimation(AvatarStatus.strike);
-                    fc.Time.game.setTimer(500, 1, this.endstrike);
+            if (gameCondition == GamesConditions.PLAY) {
+                if (this.grounded)
+                    if (this.fist.grounded) {
 
-                }
+                        this.cmpShwordAudio.play(true);
+
+                        this.fist.grounded = false;
+                        this.fist.mtxLocal.translateX(unit);
+                        this.sprite.mtxLocal.translateX(unit);
+                        this.setAnimation(AvatarStatus.strike);
+                        fc.Time.game.setTimer(500, 1, this.endstrike);
+                    }
+            }
 
 
         }
@@ -166,7 +182,9 @@ namespace Endabgabe {
         public newhealth(_damage: number): void {
             if (this.invulnerable == false) {
                 gameState.health -= _damage;
+                this.cmpHitAudio.play(true);
                 if (gameState.health <= 0) {
+                    this.cmpStepAudio.play(false);
                     hndGameOver();
                 }
                 this.invulnerable = true;
@@ -195,14 +213,17 @@ namespace Endabgabe {
                         this.avatarStatus = AvatarStatus.strike;
                         break;
                     case AvatarStatus.idle:
+                        this.cmpStepAudio.play(false);
                         this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Avatar.animations["Idle"]);
                         this.avatarStatus = AvatarStatus.idle;
                         break;
                     case AvatarStatus.walk:
+                        this.cmpStepAudio.play(true);
                         this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Avatar.animations["Walk"]);
                         this.avatarStatus = AvatarStatus.walk;
                         break;
                     case AvatarStatus.jump:
+                        this.cmpStepAudio.play(false);
                         this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Avatar.animations["jump"]);
                         this.avatarStatus = AvatarStatus.jump;
                         break;

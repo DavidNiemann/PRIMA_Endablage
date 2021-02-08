@@ -72,7 +72,7 @@ namespace Endabgabe {
         document.addEventListener("keypress", avatar.hndJump);
         document.addEventListener("keypress", avatar.hadKeyboard);
         document.addEventListener("click", avatar.strike);
-        // canvas.addEventListener("click", canvas.requestPointerLock);
+        //canvas.addEventListener("click", canvas.requestPointerLock);
         //canvas.addEventListener("mousemove", avatar.hndMouse);
 
         Hud.start();

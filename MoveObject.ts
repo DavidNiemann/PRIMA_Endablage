@@ -8,9 +8,30 @@ namespace Endabgabe {
         public grounded: boolean = false;
         public acceleration: number = 0.9;
 
+        protected audioShword: fc.Audio;
+        protected audioHit: fc.Audio;
+        protected cmpShwordAudio: fc.ComponentAudio;
+        protected cmpHitAudio: fc.ComponentAudio;
+        protected audioStep: fc.Audio;
+        protected cmpStepAudio: fc.ComponentAudio;
         public constructor(_name: string, _size: fc.Vector3, _position: fc.Vector3) {
             super(_name, _size, _position);
             this.velocity = fc.Vector3.ZERO();
+
+            this.audioShword = new fc.Audio("../GameSounds/mixkit_fast_sword.wav");
+            this.cmpShwordAudio = new fc.ComponentAudio(this.audioShword, false, false);
+            this.cmpShwordAudio.connect(true);
+            this.cmpShwordAudio.volume = 1;
+
+            this.audioHit = new fc.Audio("../GameSounds/mixkit_Hit.mp3");
+            this.cmpHitAudio = new fc.ComponentAudio(this.audioHit, false, false);
+            this.cmpHitAudio.connect(true);
+            this.cmpHitAudio.volume = 1;
+
+            this.audioStep = new fc.Audio("../GameSounds/mixkit_step.wav");
+            this.cmpStepAudio = new fc.ComponentAudio(this.audioStep, true, false);
+            this.cmpStepAudio.connect(true);
+            this.cmpStepAudio.volume = 1;
 
         }
 
