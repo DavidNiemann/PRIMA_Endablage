@@ -63,6 +63,9 @@ namespace Endabgabe {
                 }
             return _target;
         }
+        public setPause(): void {
+            this.cmpStepAudio.play(false);
+        }
 
         public hndYCollision(_target: GameObject): void {
             if (this.mtxLocal.translation.y > _target.mtxLocal.translation.y) {

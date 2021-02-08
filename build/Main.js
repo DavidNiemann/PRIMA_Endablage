@@ -69,6 +69,9 @@ var Endabgabe;
                 }
             return _target;
         }
+        setPause() {
+            this.cmpStepAudio.play(false);
+        }
         hndYCollision(_target) {
             if (this.mtxLocal.translation.y > _target.mtxLocal.translation.y) {
                 if ( /* !this.grounded) { */this.mtxLocal.translation.y != _target.mtxLocal.translation.y + 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.y + _target.getComponent(fc.ComponentMesh).pivot.scaling.y)) {
@@ -562,6 +565,8 @@ var Endabgabe;
         root.addChild(Endabgabe.enemies);
         Endabgabe.enemies.addChild(worldGenerator.createEnemie(Endabgabe.worldNumber));
         Endabgabe.enemies.getChild(0).activ = true;
+        let test = new Endabgabe.HealthUp("HealthUp", fc.Vector3.ZERO(), fc.Vector3.ZERO());
+        Endabgabe.gameWorld.addChild(test);
         let cmpCamera = new fc.ComponentCamera();
         cmpCamera.pivot.translateZ(Endabgabe.worldLength);
         cmpCamera.pivot.rotateY(180);
@@ -605,20 +610,26 @@ var Endabgabe;
             }
             Endabgabe.viewport.draw();
         }
+        else {
+            Endabgabe.avatar.setPause();
+            for (let enemy of Endabgabe.enemies.getChildren()) {
+                enemy.setPause();
+            }
+        }
     }
     function genarateWorld(_worldNumber) {
         Endabgabe.gameWorld.addChild(worldGenerator.genarateWorld(_worldNumber, fc.Vector3.X(_worldNumber)));
     }
     async function createAvatarAssets() {
-        let txtCacodemon = new fc.TextureImage();
-        await txtCacodemon.load("../GameAssets/AvatarAssets.png");
-        let coatSprite = new fc.CoatTextured(null, txtCacodemon);
+        let txtAvatar = new fc.TextureImage();
+        await txtAvatar.load("../GameAssets/AvatarAssets.png");
+        let coatSprite = new fc.CoatTextured(null, txtAvatar);
         Endabgabe.Avatar.generateSprites(coatSprite);
     }
     async function createEnemyAssets() {
-        let txtCacodemon = new fc.TextureImage();
-        await txtCacodemon.load("../GameAssets/AvatarAssets.png");
-        let coatSprite = new fc.CoatTextured(null, txtCacodemon);
+        let txtEnemy = new fc.TextureImage();
+        await txtEnemy.load("../GameAssets/AvatarAssets.png");
+        let coatSprite = new fc.CoatTextured(null, txtEnemy);
         Endabgabe.Enemy.generateSprites(coatSprite);
     }
     async function loaddata(_url) {
@@ -689,6 +700,23 @@ var Endabgabe;
         buttenDiv.appendChild(gameOverText);
     }
     Endabgabe.hndGameOver = hndGameOver;
+})(Endabgabe || (Endabgabe = {}));
+var Endabgabe;
+(function (Endabgabe) {
+    var fc = FudgeCore;
+    let HealthUp = /** @class */ (() => {
+        class HealthUp extends Endabgabe.MoveObject {
+            constructor(_name, _size, _position) {
+                super(_name, _size, _position);
+                this.cmpMaterial = new fc.ComponentMaterial(HealthUp.mtrHeart);
+                this.addComponent(this.cmpMaterial);
+            }
+        }
+        HealthUp.txtHeart = new fc.TextureImage("../GameAssets/Heart.jpg");
+        HealthUp.mtrHeart = new fc.Material("SolidWhite", fc.ShaderUniColor, new fc.CoatTextured(fc.Color.CSS("WHITE")) /* , HealthUp.txtHeart) */);
+        return HealthUp;
+    })();
+    Endabgabe.HealthUp = HealthUp;
 })(Endabgabe || (Endabgabe = {}));
 var Endabgabe;
 (function (Endabgabe) {

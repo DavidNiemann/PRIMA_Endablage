@@ -63,6 +63,8 @@ namespace Endabgabe {
         (<Enemy>enemies.getChild(0)).activ = true;
         
         
+        let test: HealthUp = new HealthUp("HealthUp", fc.Vector3.ZERO(), fc.Vector3.ZERO());
+        gameWorld.addChild(test);
 
         let cmpCamera: fc.ComponentCamera = new fc.ComponentCamera();
         cmpCamera.pivot.translateZ(worldLength);
@@ -106,6 +108,7 @@ namespace Endabgabe {
                 }
 
             }
+            
 
             // worldGenerator.updateWorld(worldNumber);
             avatar.update();
@@ -116,7 +119,13 @@ namespace Endabgabe {
             }
             viewport.draw();
         }
-
+        else {
+            avatar.setPause();
+            for (let enemy of enemies.getChildren() as Enemy[]) {
+                enemy.setPause();
+            }
+            
+        }
     }
 
 
@@ -125,16 +134,16 @@ namespace Endabgabe {
     }
 
     async function createAvatarAssets(): Promise<void> {
-        let txtCacodemon: fc.TextureImage = new fc.TextureImage();
-        await txtCacodemon.load("../GameAssets/AvatarAssets.png");
-        let coatSprite: fc.CoatTextured = new fc.CoatTextured(null, txtCacodemon);
+        let txtAvatar: fc.TextureImage = new fc.TextureImage();
+        await txtAvatar.load("../GameAssets/AvatarAssets.png");
+        let coatSprite: fc.CoatTextured = new fc.CoatTextured(null, txtAvatar);
         Avatar.generateSprites(coatSprite);
 
     }
     async function createEnemyAssets(): Promise<void> {
-        let txtCacodemon: fc.TextureImage = new fc.TextureImage();
-        await txtCacodemon.load("../GameAssets/AvatarAssets.png");
-        let coatSprite: fc.CoatTextured = new fc.CoatTextured(null, txtCacodemon);
+        let txtEnemy: fc.TextureImage = new fc.TextureImage();
+        await txtEnemy.load("../GameAssets/AvatarAssets.png");
+        let coatSprite: fc.CoatTextured = new fc.CoatTextured(null, txtEnemy);
         Enemy.generateSprites(coatSprite);
 
     }

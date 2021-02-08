@@ -44,15 +44,15 @@ namespace Endabgabe {
             this.sprite.addChild(this.fist);
             //this.removeComponent(this.getComponents(fc.ComponentMaterial)[0]);
             //this.fist.removeComponent(this.fist.getComponents(fc.ComponentMaterial)[0]);
-           /*  this.audioShword = new fc.Audio("../GameSounds/mixkit_fast_sword.wav");
-            this.cmpShwordAudio = new fc.ComponentAudio(this.audioShword, false, false);
-            this.cmpShwordAudio.connect(true);
-            this.cmpShwordAudio.volume = 1;
-
-            this.audioHit = new fc.Audio("../GameSounds/mixkit_Hit.mp3");
-            this.cmpHitAudio = new fc.ComponentAudio(this.audioHit, false, false);
-            this.cmpHitAudio.connect(true);
-            this.cmpHitAudio.volume = 1; */
+            /*  this.audioShword = new fc.Audio("../GameSounds/mixkit_fast_sword.wav");
+             this.cmpShwordAudio = new fc.ComponentAudio(this.audioShword, false, false);
+             this.cmpShwordAudio.connect(true);
+             this.cmpShwordAudio.volume = 1;
+ 
+             this.audioHit = new fc.Audio("../GameSounds/mixkit_Hit.mp3");
+             this.cmpHitAudio = new fc.ComponentAudio(this.audioHit, false, false);
+             this.cmpHitAudio.connect(true);
+             this.cmpHitAudio.volume = 1; */
         }
 
 
@@ -90,7 +90,7 @@ namespace Endabgabe {
                     );
                     this.velocity.x = this.control.getOutput();
                     this.hnddDirection(this.velocity);
-                  
+
                 }
         }
 
@@ -143,8 +143,8 @@ namespace Endabgabe {
                 this.setAnimation(AvatarStatus.walk);
             }
 
-   
-            
+
+
         }
         public strike = (): void => {
             if (gameCondition == GamesConditions.PLAY) {
@@ -193,6 +193,7 @@ namespace Endabgabe {
 
 
         }
+       
 
         public setVulnerable = (): void => {
             this.invulnerable = false;
@@ -239,7 +240,10 @@ namespace Endabgabe {
             if (_direction.x < 0) { this.flip(true); } else { this.flip(false); }
         }
 
+      
+
     }
+
 
 
 
