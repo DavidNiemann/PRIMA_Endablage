@@ -813,7 +813,7 @@ var Endabgabe;
             this.cmpStepAudio = new fc.ComponentAudio(this.audioStep, true, false);
             this.cmpStepAudio.connect(true);
             this.cmpStepAudio.volume = 1;
-            this.audioBackround = new fc.Audio("../GameSounds/background.mp3");
+            this.audioBackround = new fc.Audio("../GameSounds/MedivalBeep.mp3");
             this.cmpAudioBackround = new fc.ComponentAudio(this.audioBackround, true, false);
             this.cmpAudioBackround.connect(true);
             this.cmpAudioBackround.volume = 1;
