@@ -24,9 +24,10 @@ namespace Endabgabe {
 
         }
 
-        
+
 
         public genarateWorld(_levelNumber: number, _position: fc.Vector3): fc.Node {
+
             let mtrWall: fc.Material = new fc.Material("Wall", fc.ShaderTexture, new fc.CoatTextured(null, this.txtFloor));
             let levelRoot: fc.Node = new fc.Node("level" + _levelNumber);
             levelRoot.addChild(new Floor("Ground", new fc.Vector3(worldLength, unit, unit), new fc.Vector3(0 + _position.x, -17 + _position.y, 0 + _position.z), mtrWall));
@@ -34,6 +35,7 @@ namespace Endabgabe {
             levelRoot.addChild(this.tempWall);
             levelRoot.addChild(new GameObject("RightWall", new fc.Vector3(unit, worldhight, unit), new fc.Vector3(23 + _position.x, 0 + _position.y, 0 + _position.z)));
             levelRoot.addChild(new GameObject("Ceiling", new fc.Vector3(worldLength, unit, unit), new fc.Vector3(0 + _position.x, 17 + _position.y, 0 + _position.z)));
+
 
             let length: number = fc.Random.default.getRange(unit, worldLength / 2);
 
@@ -55,6 +57,7 @@ namespace Endabgabe {
 
         }
 
+
         public createItems(_level: number): void {
             for (let i: number = 0; i < fc.Random.default.getRange(0, 3); i++) {
 
@@ -65,6 +68,9 @@ namespace Endabgabe {
         public createNewWorld(_worldNumber: number): void {
             enemies.addChild(this.createEnemie(_worldNumber + 1));
             gameWorld.addChild(this.genarateWorld(_worldNumber + 1, fc.Vector3.X((_worldNumber + 1) * worldLength)));
+
+            root.addChild(new Background("Background", new fc.Vector3(worldLength, worldhight, unit ), fc.Vector3.X((_worldNumber + 1) * worldLength))); 
+
             /*gameWorld.getChildrenByName("level" + _worldNumber)[0].removeChild(gameWorld.getChildrenByName("level" + _worldNumber)[0].getChildrenByName("RightWall")[0]);
              gameWorld.getChildrenByName("level" + _worldNumber + 1)[0].removeChild(this.tempWall); */
             gameWorld.getChild(0).removeChild(gameWorld.getChild(0).getChildrenByName("RightWall")[0]);
@@ -85,7 +91,7 @@ namespace Endabgabe {
             Hud.setHubhealth();
         }
 
-       
+
         /*     public loadWorldData() {
      
             } */

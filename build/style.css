@@ -40,7 +40,7 @@ canvas {
 #enemyHealthDiv{
  
     position: absolute;  
-    left: calc( var(--canvaswidth) / 2 - 70px) ;
+    left: calc( var(--canvaswidth) / 2 - var(--livebarwidth) /2 ) ;
     
 }
 

@@ -343,6 +343,30 @@ var Endabgabe;
 var Endabgabe;
 (function (Endabgabe) {
     var fc = FudgeCore;
+    // import fcaid = FudgeAid;
+    let Background = /** @class */ (() => {
+        class Background extends fc.Node {
+            constructor(_name, _size, _position) {
+                super(_name);
+                let cmpQuad = new fc.ComponentMesh(Background.meshQuad);
+                let mtrBackground = new fc.Material("Background", fc.ShaderTexture, new fc.CoatTextured(null, Background.txtBackground));
+                let cmpMaterial = new fc.ComponentMaterial(mtrBackground);
+                this.addComponent(new fc.ComponentTransform(fc.Matrix4x4.TRANSLATION(_position)));
+                this.addComponent(cmpQuad);
+                this.mtxLocal.scale(_size);
+                this.addComponent(cmpMaterial);
+                console.log(this);
+            }
+        }
+        Background.txtBackground = new fc.TextureImage("../GameAssets/Background.png");
+        Background.meshQuad = new fc.MeshQuad();
+        return Background;
+    })();
+    Endabgabe.Background = Background;
+})(Endabgabe || (Endabgabe = {}));
+var Endabgabe;
+(function (Endabgabe) {
+    var fc = FudgeCore;
     var fcAid = FudgeAid;
     let JOB;
     (function (JOB) {
@@ -549,7 +573,6 @@ var Endabgabe;
     })(GamesConditions = Endabgabe.GamesConditions || (Endabgabe.GamesConditions = {}));
     window.addEventListener("load", sceneLoad);
     Endabgabe.worldNumber = 0;
-    let root;
     let camaraNode;
     let worldGenerator;
     let movableCamara = false;
@@ -560,22 +583,22 @@ var Endabgabe;
         Endabgabe.gameCondition = GamesConditions.STARTGAME;
         await loaddata("../Data/data.json");
         Endabgabe.gameState.health = Endabgabe.avatarProperties.startLife;
-        root = new fc.Node("root");
+        Endabgabe.root = new fc.Node("root");
         Endabgabe.items = new fc.Node("items");
         camaraNode = new fc.Node("camara");
         camaraNode.addComponent(new fc.ComponentTransform());
-        root.addChild(camaraNode);
+        Endabgabe.root.addChild(camaraNode);
         Endabgabe.gameWorld = new fc.Node("GameWorld");
-        root.addChild(Endabgabe.gameWorld);
-        root.addChild(Endabgabe.items);
+        Endabgabe.root.addChild(Endabgabe.gameWorld);
+        Endabgabe.root.addChild(Endabgabe.items);
         worldGenerator = new Endabgabe.WorldGenarator("world");
         genarateWorld(Endabgabe.worldNumber);
         await createAvatarAssets();
         Endabgabe.avatar = new Endabgabe.Avatar("Avatar", new fc.Vector3(2 * Endabgabe.unit, 2 * Endabgabe.unit, 1), fc.Vector3.ZERO());
-        root.addChild(Endabgabe.avatar);
+        Endabgabe.root.addChild(Endabgabe.avatar);
         Endabgabe.enemies = new fc.Node("Enemies");
         await createEnemyAssets();
-        root.addChild(Endabgabe.enemies);
+        Endabgabe.root.addChild(Endabgabe.enemies);
         Endabgabe.enemies.addChild(worldGenerator.createEnemie(Endabgabe.worldNumber));
         Endabgabe.enemies.getChild(0).activ = true;
         /*
@@ -593,7 +616,7 @@ var Endabgabe;
         Endabgabe.Hud.start();
         Endabgabe.Hud.setHubhealth();
         Endabgabe.viewport = new fc.Viewport();
-        Endabgabe.viewport.initialize("Viewport", root, cmpCamera, canvas);
+        Endabgabe.viewport.initialize("Viewport", Endabgabe.root, cmpCamera, canvas);
         fc.Debug.log(Endabgabe.viewport);
         Endabgabe.viewport.camera.backgroundColor = fc.Color.CSS("Blue");
         fc.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, hndLoop);
@@ -732,7 +755,7 @@ var Endabgabe;
         class HealthUp extends Endabgabe.MoveObject {
             constructor(_name, _size, _position) {
                 super(_name, _size, _position);
-                let mtrHeart = new fc.Material("Wall", fc.ShaderTexture, new fc.CoatTextured(null, HealthUp.txtHeart));
+                let mtrHeart = new fc.Material("Heart", fc.ShaderTexture, new fc.CoatTextured(null, HealthUp.txtHeart));
                 let cmpMaterial = new ƒ.ComponentMaterial(mtrHeart);
                 cmpMaterial.pivot.scaleX(_size.x / Endabgabe.unit);
                 cmpMaterial.pivot.scaleY(_size.y / Endabgabe.unit);
@@ -899,6 +922,7 @@ var Endabgabe;
         createNewWorld(_worldNumber) {
             Endabgabe.enemies.addChild(this.createEnemie(_worldNumber + 1));
             Endabgabe.gameWorld.addChild(this.genarateWorld(_worldNumber + 1, fc.Vector3.X((_worldNumber + 1) * Endabgabe.worldLength)));
+            Endabgabe.root.addChild(new Endabgabe.Background("Background", new fc.Vector3(Endabgabe.worldLength, Endabgabe.worldhight, Endabgabe.unit), fc.Vector3.X((_worldNumber + 1) * Endabgabe.worldLength)));
             /*gameWorld.getChildrenByName("level" + _worldNumber)[0].removeChild(gameWorld.getChildrenByName("level" + _worldNumber)[0].getChildrenByName("RightWall")[0]);
              gameWorld.getChildrenByName("level" + _worldNumber + 1)[0].removeChild(this.tempWall); */
             Endabgabe.gameWorld.getChild(0).removeChild(Endabgabe.gameWorld.getChild(0).getChildrenByName("RightWall")[0]);

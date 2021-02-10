@@ -10,7 +10,7 @@ namespace Endabgabe {
        
         public constructor(_name: string, _size: fc.Vector3, _position: fc.Vector3) {
             super(_name, _size, _position);
-            let mtrHeart: fc.Material = new fc.Material("Wall", fc.ShaderTexture, new fc.CoatTextured(null, HealthUp.txtHeart));
+            let mtrHeart: fc.Material = new fc.Material("Heart", fc.ShaderTexture, new fc.CoatTextured(null, HealthUp.txtHeart));
             let cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(mtrHeart);
             cmpMaterial.pivot.scaleX(_size.x / unit);
             cmpMaterial.pivot.scaleY(_size.y / unit);

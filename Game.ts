@@ -22,7 +22,7 @@ namespace Endabgabe {
 
     export let sounds: Sound;
 
-    let root: fc.Node;
+    export let root: fc.Node;
     let camaraNode: fc.Node;
     let worldGenerator: WorldGenarator;
     let movableCamara: boolean = false;
