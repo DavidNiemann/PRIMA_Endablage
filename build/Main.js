@@ -816,7 +816,7 @@ var Endabgabe;
             this.audioBackround = new fc.Audio("../GameSounds/MedivalBeep.mp3");
             this.cmpAudioBackround = new fc.ComponentAudio(this.audioBackround, true, false);
             this.cmpAudioBackround.connect(true);
-            this.cmpAudioBackround.volume = 1;
+            this.cmpAudioBackround.volume = 0.2;
             this.audioJump = new fc.Audio("../GameSounds/Jump.mp3");
             this.cmpAudioJump = new fc.ComponentAudio(this.audioJump, false, false);
             this.cmpAudioJump.connect(true);
@@ -824,7 +824,7 @@ var Endabgabe;
             this.audioLand = new fc.Audio("../GameSounds/land.mp3");
             this.cmpAudioLand = new fc.ComponentAudio(this.audioLand, false, false);
             this.cmpAudioLand.connect(true);
-            this.cmpAudioLand.volume = 1;
+            this.cmpAudioLand.volume = 0.5;
         }
         playSound(_sound) {
             switch (_sound) {
