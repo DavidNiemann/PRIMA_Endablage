@@ -355,7 +355,6 @@ var Endabgabe;
                 this.addComponent(cmpQuad);
                 this.mtxLocal.scale(_size);
                 this.addComponent(cmpMaterial);
-                console.log(this);
             }
         }
         Background.txtBackground = new fc.TextureImage("../GameAssets/Background.png");
@@ -593,6 +592,7 @@ var Endabgabe;
         Endabgabe.root.addChild(Endabgabe.items);
         worldGenerator = new Endabgabe.WorldGenarator("world");
         genarateWorld(Endabgabe.worldNumber);
+        Endabgabe.root.addChild(new Endabgabe.Background("Background", new fc.Vector3(Endabgabe.worldLength, Endabgabe.worldhight, Endabgabe.unit), fc.Vector3.X(0)));
         await createAvatarAssets();
         Endabgabe.avatar = new Endabgabe.Avatar("Avatar", new fc.Vector3(2 * Endabgabe.unit, 2 * Endabgabe.unit, 1), fc.Vector3.ZERO());
         Endabgabe.root.addChild(Endabgabe.avatar);

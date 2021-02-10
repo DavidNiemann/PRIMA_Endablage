@@ -54,7 +54,8 @@ namespace Endabgabe {
         worldGenerator = new WorldGenarator("world");
         genarateWorld(worldNumber);
 
-
+        root.addChild(new Background("Background", new fc.Vector3(worldLength, worldhight, unit ), fc.Vector3.X(0)));
+        
         await createAvatarAssets();
         avatar = new Avatar("Avatar", new fc.Vector3(2 * unit, 2 * unit, 1), fc.Vector3.ZERO());
 
@@ -93,7 +94,7 @@ namespace Endabgabe {
         fc.Loop.addEventListener(fc.EVENT.LOOP_FRAME, hndLoop);
         fc.Loop.start(fc.LOOP_MODE.TIME_GAME, 60);
         viewport.draw();
-
+       
     }
 
 

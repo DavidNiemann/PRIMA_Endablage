@@ -16,7 +16,7 @@ namespace Endabgabe {
             this.addComponent(cmpQuad);
             this.mtxLocal.scale(_size);
             this.addComponent(cmpMaterial);
-            console.log(this);
+          
 
         }
 
