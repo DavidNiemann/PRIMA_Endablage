@@ -3,21 +3,21 @@ namespace Endabgabe {
     // import fcaid = FudgeAid;
 
     export class MoveObject extends GameObject {
-     /*    private static readonly mtrSolidWhite: fc.Material = new fc.Material("SolidWhite", fc.ShaderUniColor, new fc.CoatColored(fc.Color.CSS("WHITE"))); */
-        
+        /*    private static readonly mtrSolidWhite: fc.Material = new fc.Material("SolidWhite", fc.ShaderUniColor, new fc.CoatColored(fc.Color.CSS("WHITE"))); */
+
         public velocity: fc.Vector3 = fc.Vector3.ZERO();
         public grounded: boolean = false;
         public acceleration: number = 0.9;
 
-      /*   private cmpMaterial: fc.ComponentMaterial; */
+        /*   private cmpMaterial: fc.ComponentMaterial; */
 
         public constructor(_name: string, _size: fc.Vector3, _position: fc.Vector3) {
             super(_name, _size, _position);
             this.velocity = fc.Vector3.ZERO();
 
-           /*  this.cmpMaterial = new fc.ComponentMaterial(MoveObject.mtrSolidWhite);
-            this.addComponent(this.cmpMaterial); */
- 
+            /*  this.cmpMaterial = new fc.ComponentMaterial(MoveObject.mtrSolidWhite);
+             this.addComponent(this.cmpMaterial); */
+
         }
 
 
@@ -57,10 +57,11 @@ namespace Endabgabe {
 
                 if (/* !this.grounded) { */this.mtxLocal.translation.y != _target.mtxLocal.translation.y + 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.y + _target.getComponent(fc.ComponentMesh).pivot.scaling.y)) {
                     this.grounded = true;
+                    sounds.playSound(Sounds.Land);
                     this.velocity.y = 0;
                     this.mtxLocal.translation = new fc.Vector3(this.mtxLocal.translation.x, _target.mtxLocal.translation.y + 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.y + _target.getComponent(fc.ComponentMesh).pivot.scaling.y), 0);
                 }
-            }
+            } else { this.grounded = false; }
             /*  else {
                  if (this.mtxLocal.translation.y != _target.mtxLocal.translation.y - 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.y + _target.getComponent(fc.ComponentMesh).pivot.scaling.y)) {
                      this.velocity.y = 0;

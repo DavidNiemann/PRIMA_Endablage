@@ -68,9 +68,13 @@ var Endabgabe;
             if (this.mtxLocal.translation.y > _target.mtxLocal.translation.y) {
                 if ( /* !this.grounded) { */this.mtxLocal.translation.y != _target.mtxLocal.translation.y + 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.y + _target.getComponent(fc.ComponentMesh).pivot.scaling.y)) {
                     this.grounded = true;
+                    Endabgabe.sounds.playSound(Endabgabe.Sounds.Land);
                     this.velocity.y = 0;
                     this.mtxLocal.translation = new fc.Vector3(this.mtxLocal.translation.x, _target.mtxLocal.translation.y + 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.y + _target.getComponent(fc.ComponentMesh).pivot.scaling.y), 0);
                 }
+            }
+            else {
+                this.grounded = false;
             }
             /*  else {
                  if (this.mtxLocal.translation.y != _target.mtxLocal.translation.y - 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.y + _target.getComponent(fc.ComponentMesh).pivot.scaling.y)) {
@@ -162,11 +166,13 @@ var Endabgabe;
                     }
             };
             this.hndJump = () => {
-                if (this.grounded) {
-                    if (fc.Keyboard.isPressedOne([fc.KEYBOARD_CODE.SPACE])) {
-                        this.velocity.y = 25;
+                if (Endabgabe.gameCondition == Endabgabe.GamesConditions.PLAY)
+                    if (this.grounded) {
+                        if (fc.Keyboard.isPressedOne([fc.KEYBOARD_CODE.SPACE])) {
+                            Endabgabe.sounds.playSound(Endabgabe.Sounds.Jump);
+                            this.velocity.y = 25;
+                        }
                     }
-                }
             };
             this.strike = () => {
                 if (Endabgabe.gameCondition == Endabgabe.GamesConditions.PLAY) {
@@ -671,7 +677,9 @@ var Endabgabe;
         butten.addEventListener("click", hndGameButtons);
         restartButten.addEventListener("click", hndGameButtons);
         function hndGameButtons(_event) {
-            switch (_event.currentTarget.value) {
+            let currentTarget = _event.currentTarget;
+            currentTarget.focus();
+            switch (currentTarget.value) {
                 case "start":
                     Endabgabe.gameCondition = GamesConditions.PLAY;
                     butten.value = "pause";
@@ -735,7 +743,7 @@ var Endabgabe;
                 Endabgabe.items.removeChild(this);
             }
         }
-        HealthUp.txtHeart = new fc.TextureImage("../GameAssets/Heart.jpg");
+        HealthUp.txtHeart = new fc.TextureImage("../GameAssets/Heart.png");
         return HealthUp;
     })();
     Endabgabe.HealthUp = HealthUp;
@@ -787,6 +795,8 @@ var Endabgabe;
         Sounds[Sounds["Step"] = 0] = "Step";
         Sounds[Sounds["Hit"] = 1] = "Hit";
         Sounds[Sounds["Shword"] = 2] = "Shword";
+        Sounds[Sounds["Jump"] = 3] = "Jump";
+        Sounds[Sounds["Land"] = 4] = "Land";
     })(Sounds = Endabgabe.Sounds || (Endabgabe.Sounds = {}));
     class Sound {
         constructor() {
@@ -807,6 +817,14 @@ var Endabgabe;
             this.cmpAudioBackround = new fc.ComponentAudio(this.audioBackround, true, false);
             this.cmpAudioBackround.connect(true);
             this.cmpAudioBackround.volume = 1;
+            this.audioJump = new fc.Audio("../GameSounds/Jump.mp3");
+            this.cmpAudioJump = new fc.ComponentAudio(this.audioJump, false, false);
+            this.cmpAudioJump.connect(true);
+            this.cmpAudioJump.volume = 1;
+            this.audioLand = new fc.Audio("../GameSounds/land.mp3");
+            this.cmpAudioLand = new fc.ComponentAudio(this.audioLand, false, false);
+            this.cmpAudioLand.connect(true);
+            this.cmpAudioLand.volume = 1;
         }
         playSound(_sound) {
             switch (_sound) {
@@ -818,6 +836,12 @@ var Endabgabe;
                     break;
                 case Sounds.Step:
                     this.cmpStepAudio.play(true);
+                    break;
+                case Sounds.Jump:
+                    this.cmpAudioJump.play(true);
+                    break;
+                case Sounds.Land:
+                    this.cmpAudioLand.play(true);
                     break;
                 default:
                     break;

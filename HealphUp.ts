@@ -6,7 +6,7 @@ namespace Endabgabe {
 
     export class HealthUp extends MoveObject {
 
-        private static txtHeart: fc.TextureImage = new fc.TextureImage("../GameAssets/Heart.jpg");
+        private static txtHeart: fc.TextureImage = new fc.TextureImage("../GameAssets/Heart.png");
        
         public constructor(_name: string, _size: fc.Vector3, _position: fc.Vector3) {
             super(_name, _size, _position);

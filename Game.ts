@@ -20,7 +20,7 @@ namespace Endabgabe {
     export let worldLength: number; // = unit * 25;
     export let worldhight: number; // = unit * 20;
 
-    export let sounds: Sound ;
+    export let sounds: Sound;
 
     let root: fc.Node;
     let camaraNode: fc.Node;
@@ -43,12 +43,12 @@ namespace Endabgabe {
 
         root = new fc.Node("root");
         items = new fc.Node("items");
-     
+
         camaraNode = new fc.Node("camara");
         camaraNode.addComponent(new fc.ComponentTransform());
         root.addChild(camaraNode);
         gameWorld = new fc.Node("GameWorld");
-       
+
         root.addChild(gameWorld);
         root.addChild(items);
         worldGenerator = new WorldGenarator("world");
@@ -68,9 +68,9 @@ namespace Endabgabe {
         enemies.addChild(worldGenerator.createEnemie(worldNumber));
         (<Enemy>enemies.getChild(0)).activ = true;
 
-/* 
-        test = new HealthUp("HealthUp", fc.Vector3.ONE(unit), fc.Vector3.ZERO());
-        gameWorld.addChild(test); */
+        /* 
+                test = new HealthUp("HealthUp", fc.Vector3.ONE(unit), fc.Vector3.ZERO());
+                gameWorld.addChild(test); */
 
         let cmpCamera: fc.ComponentCamera = new fc.ComponentCamera();
         cmpCamera.pivot.translateZ(worldLength);
@@ -93,12 +93,12 @@ namespace Endabgabe {
         fc.Loop.addEventListener(fc.EVENT.LOOP_FRAME, hndLoop);
         fc.Loop.start(fc.LOOP_MODE.TIME_GAME, 60);
         viewport.draw();
-       
+
     }
 
 
     function hndLoop(_event: Event): void {
-       /*  test.update(); */
+        /*  test.update(); */
         if (gameCondition == GamesConditions.PLAY) {
 
             if (!enemies.getChild(0)) {
@@ -133,10 +133,10 @@ namespace Endabgabe {
             viewport.draw();
         }
         else {
-           /*  avatar.setPause();
-            for (let enemy of enemies.getChildren() as Enemy[]) {
-                enemy.setPause();
-            } */
+            /*  avatar.setPause();
+             for (let enemy of enemies.getChildren() as Enemy[]) {
+                 enemy.setPause();
+             } */
 
         }
     }
@@ -201,7 +201,10 @@ namespace Endabgabe {
         restartButten.addEventListener("click", hndGameButtons);
 
         function hndGameButtons(_event: Event): void {
-            switch ((<HTMLButtonElement>_event.currentTarget).value) {
+
+            let currentTarget: HTMLButtonElement = (<HTMLButtonElement>_event.currentTarget);
+            currentTarget.focus();
+            switch (currentTarget.value) {
 
                 case "start":
                     gameCondition = GamesConditions.PLAY;

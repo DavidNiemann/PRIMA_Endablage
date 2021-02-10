@@ -97,14 +97,16 @@ namespace Endabgabe {
 
 
         public hndJump = (): void => {
-            if (this.grounded) {
+            if (gameCondition == GamesConditions.PLAY)
+                if (this.grounded) {
 
-                if (fc.Keyboard.isPressedOne([fc.KEYBOARD_CODE.SPACE])) {
-                    this.velocity.y = 25;
+                    if (fc.Keyboard.isPressedOne([fc.KEYBOARD_CODE.SPACE])) {
+                        sounds.playSound(Sounds.Jump);
+                        this.velocity.y = 25;
+
+                    }
 
                 }
-
-            }
 
         }
 
