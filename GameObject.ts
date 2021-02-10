@@ -20,6 +20,7 @@ namespace Endabgabe {
             //this.cmpMaterial = new fc.ComponentMaterial(GameObject.mtrSolidWhite);
            // this.addComponent(this.cmpMaterial);
 
+
              
         }
     }

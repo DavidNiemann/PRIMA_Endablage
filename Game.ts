@@ -14,11 +14,13 @@ namespace Endabgabe {
     export let avatar: Avatar;
     export let gameWorld: fc.Node;
     export let enemies: fc.Node;
-
+    export let items: fc.Node;
     export let worldNumber: number = 0;
     export let unit: number; // = 2;
     export let worldLength: number; // = unit * 25;
     export let worldhight: number; // = unit * 20;
+
+    export let sounds: Sound ;
 
     let root: fc.Node;
     let camaraNode: fc.Node;
@@ -29,28 +31,32 @@ namespace Endabgabe {
     export let enemyProperties: EnemyProperties;
 
     async function sceneLoad(_event?: Event): Promise<void> {
-
+        sounds = new Sound();
         hndGameConditiones();
 
         const canvas: HTMLCanvasElement = document.querySelector("canvas");
         gameCondition = GamesConditions.STARTGAME;
+
         await loaddata("../Data/data.json");
+
         gameState.health = avatarProperties.startLife;
+
         root = new fc.Node("root");
-
-
+        items = new fc.Node("items");
+     
         camaraNode = new fc.Node("camara");
         camaraNode.addComponent(new fc.ComponentTransform());
         root.addChild(camaraNode);
         gameWorld = new fc.Node("GameWorld");
+       
         root.addChild(gameWorld);
-
+        root.addChild(items);
         worldGenerator = new WorldGenarator("world");
         genarateWorld(worldNumber);
 
 
         await createAvatarAssets();
-        avatar = new Avatar("Avatar", new fc.Vector3(unit, unit, 1), fc.Vector3.ZERO());
+        avatar = new Avatar("Avatar", new fc.Vector3(2 * unit, 2 * unit, 1), fc.Vector3.ZERO());
 
         root.addChild(avatar);
 
@@ -61,10 +67,10 @@ namespace Endabgabe {
 
         enemies.addChild(worldGenerator.createEnemie(worldNumber));
         (<Enemy>enemies.getChild(0)).activ = true;
-        
-        
-        let test: HealthUp = new HealthUp("HealthUp", fc.Vector3.ZERO(), fc.Vector3.ZERO());
-        gameWorld.addChild(test);
+
+/* 
+        test = new HealthUp("HealthUp", fc.Vector3.ONE(unit), fc.Vector3.ZERO());
+        gameWorld.addChild(test); */
 
         let cmpCamera: fc.ComponentCamera = new fc.ComponentCamera();
         cmpCamera.pivot.translateZ(worldLength);
@@ -79,6 +85,7 @@ namespace Endabgabe {
 
         Hud.start();
         Hud.setHubhealth();
+
         viewport = new fc.Viewport();
         viewport.initialize("Viewport", root, cmpCamera, canvas);
         fc.Debug.log(viewport);
@@ -86,10 +93,12 @@ namespace Endabgabe {
         fc.Loop.addEventListener(fc.EVENT.LOOP_FRAME, hndLoop);
         fc.Loop.start(fc.LOOP_MODE.TIME_GAME, 60);
         viewport.draw();
+       
     }
 
 
     function hndLoop(_event: Event): void {
+       /*  test.update(); */
         if (gameCondition == GamesConditions.PLAY) {
 
             if (!enemies.getChild(0)) {
@@ -108,7 +117,7 @@ namespace Endabgabe {
                 }
 
             }
-            
+
 
             // worldGenerator.updateWorld(worldNumber);
             avatar.update();
@@ -117,14 +126,18 @@ namespace Endabgabe {
                 enemy.update();
 
             }
+            for (let item of items.getChildren() as MoveObject[]) {
+                item.update();
+
+            }
             viewport.draw();
         }
         else {
-            avatar.setPause();
+           /*  avatar.setPause();
             for (let enemy of enemies.getChildren() as Enemy[]) {
                 enemy.setPause();
-            }
-            
+            } */
+
         }
     }
 
@@ -194,14 +207,14 @@ namespace Endabgabe {
                     gameCondition = GamesConditions.PLAY;
                     butten.value = "pause";
                     butten.innerHTML = "pause";
-
+                    sounds.hndBackroundSound(true);
 
                     break;
                 case "pause":
                     gameCondition = GamesConditions.BREAK;
                     butten.value = "start";
                     butten.innerHTML = "start";
-
+                    sounds.hndBackroundSound(false);
                     break;
                 case "restart":
                     let gameOverText: HTMLParagraphElement = (<HTMLParagraphElement>document.getElementById("gameover"));
@@ -213,7 +226,8 @@ namespace Endabgabe {
                     buttenDiv.removeChild(restartButten);
                     worldNumber = 0;
                     gameState.score = 0;
-
+                    movableCamara = false;
+                    sounds.hndBackroundSound(false);
                     sceneLoad();
                     break;
                 default:
@@ -233,6 +247,6 @@ namespace Endabgabe {
         gameOverText.innerHTML = "Game Over"; buttenDiv.appendChild(gameOverText);
     }
 
-   
+
 
 }

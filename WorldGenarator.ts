@@ -51,8 +51,15 @@ namespace Endabgabe {
         }
 
         public createEnemie(_level: number): Enemy {
-            return new Enemy("enemy", new fc.Vector3(unit, unit, 1), new fc.Vector3(fc.Random.default.getRange(5, 10) + worldLength * _level, 0, 0), enemyProperties.startLife + _level * enemyProperties.lifePerLevel, Math.floor(enemyProperties.damage + _level * enemyProperties.damagePerLevel));
+            return new Enemy("enemy", new fc.Vector3(2 * unit, 2 * unit, 1), new fc.Vector3(fc.Random.default.getRange(5, 10) + worldLength * _level, 0, 0), enemyProperties.startLife + _level * enemyProperties.lifePerLevel, Math.floor(enemyProperties.damage + _level * enemyProperties.damagePerLevel));
 
+        }
+
+        public createItems(_level: number): void {
+            for (let i: number = 0; i < fc.Random.default.getRange(0, 3); i++) {
+
+                items.addChild(new HealthUp("HealthUp", fc.Vector3.ONE(unit), new fc.Vector3(fc.Random.default.getRange(worldLength * _level - worldLength / 2, worldLength * _level + worldLength / 2), 0, 0)));
+            }
         }
 
         public createNewWorld(_worldNumber: number): void {
@@ -66,6 +73,7 @@ namespace Endabgabe {
 
         public deleteoldWorld(_worldNumber?: number): void {
             gameWorld.getChild(1).addChild(this.tempWall);
+            //gameWorld.getChildrenByName("level" + _worldNumber)[0].addChild(this.tempWall);
             gameWorld.removeChild(gameWorld.getChild(0));
             for (let enemy of enemies.getChildren() as Enemy[]) {
                 enemy.setAnimation(JOB.walk);
@@ -73,6 +81,7 @@ namespace Endabgabe {
             }
             /* gameWorld.getChildrenByName("level" + _worldNumber + 1 )[0].addChild(this.tempWall);
             gameWorld.removeChild(gameWorld.getChildrenByName("level" + _worldNumber )[0]); */
+            this.createItems(_worldNumber);
             Hud.setHubhealth();
         }
 

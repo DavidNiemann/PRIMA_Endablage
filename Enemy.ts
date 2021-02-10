@@ -84,7 +84,7 @@ namespace Endabgabe {
                     this.setAnimation(JOB.jump);
                 }
 
-                if (fc.Vector3.DIFFERENCE(avatar.mtxWorld.translation, this.mtxWorld.translation).magnitude < 3 * unit / 2) {
+                if (fc.Vector3.DIFFERENCE(avatar.mtxWorld.translation, this.mtxWorld.translation).magnitude < 2*unit ) {
 
                     this.strike();
                 }
@@ -117,22 +117,22 @@ namespace Endabgabe {
             this.animations = {};
             let name: string = "Walk";
             let sprite: fcAid.SpriteSheetAnimation = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-            sprite.generateByGrid(fc.Rectangle.GET(30, 772, 33, 33), 7, 10, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(49));
+            sprite.generateByGrid(fc.Rectangle.GET(30, 772, 33, 33), 7, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(49));
             this.animations[name] = sprite;
 
             name = "Idle";
             sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-            sprite.generateByGrid(fc.Rectangle.GET(30, 468, 33, 33), 13, 10, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(49));
+            sprite.generateByGrid(fc.Rectangle.GET(30, 468, 33, 33), 13, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(49));
             this.animations[name] = sprite;
 
             name = "Strike";
             sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-            sprite.generateByGrid(fc.Rectangle.GET(30, 45, 66, 52), 4, 10, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(72));
+            sprite.generateByGrid(fc.Rectangle.GET(30, 45, 66, 52), 4, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(72));
             this.animations[name] = sprite;
 
             name = "jump";
             sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-            sprite.generateByGrid(fc.Rectangle.GET(30, 1071, 33, 33), 7, 10, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(47));
+            sprite.generateByGrid(fc.Rectangle.GET(30, 1071, 33, 33), 7, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(47));
             this.animations[name] = sprite;
         }
 
@@ -142,17 +142,17 @@ namespace Endabgabe {
                 switch (_status) {
 
                     case JOB.idle:
-                        this.cmpStepAudio.play(false);
+                      //  this.cmpStepAudio.play(false);
                         this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Enemy.animations["Idle"]);
                         this.job = JOB.idle;
                         break;
                     case JOB.walk:
-                        this.cmpStepAudio.play(true);
+                      //  this.cmpStepAudio.play(true);
                         this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Enemy.animations["Walk"]);
                         this.job = JOB.walk;
                         break;
                     case JOB.jump:
-                        this.cmpStepAudio.play(false);
+                      //  this.cmpStepAudio.play(false);
                         this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Enemy.animations["jump"]);
                         this.job = JOB.jump;
                         break;
@@ -169,7 +169,7 @@ namespace Endabgabe {
         }
 
         private flip(_reverse: boolean): void {
-
+            if (this.fist.grounded)
             this.sprite.mtxLocal.rotation = fc.Vector3.Y(_reverse ? 180 : 0);
         }
 
@@ -177,11 +177,12 @@ namespace Endabgabe {
             if (this.grounded)
 
                 if (this.fist.grounded) {
-                    this.cmpShwordAudio.play(true);
+                    sounds.playSound(Sounds.Shword);
+               /*      this.cmpShwordAudio.play(true); */
                     this.setAnimation(JOB.attack);
                     this.fist.grounded = false;
-                    this.fist.mtxLocal.translateX(1);
-                    this.sprite.mtxLocal.translateX(1);
+                    this.fist.mtxLocal.translateX(unit/2);
+                    this.sprite.mtxLocal.translateX(unit/2);
                     this.setAnimation(JOB.attack);
                     fc.Time.game.setTimer(500, 1, this.endstrike);
 
@@ -190,8 +191,8 @@ namespace Endabgabe {
 
         public endstrike = (): void => {
             this.setAnimation(JOB.idle);
-            this.fist.mtxLocal.translateX(-1);
-            this.sprite.mtxLocal.translateX(-1);
+            this.fist.mtxLocal.translateX(-unit/2);
+            this.sprite.mtxLocal.translateX(-unit/2);
             this.fist.grounded = true;
         }
 
@@ -204,11 +205,12 @@ namespace Endabgabe {
             this.invulnerable = true;
             fc.Time.game.setTimer(500, 1, this.setVulnerable/* function (): void { this.invulnerable  } */);
             this.health -= _damage;
-            this.cmpHitAudio.play(true);
+            sounds.playSound(Sounds.Hit);
+         /*    this.cmpHitAudio.play(true); */
             gameState.currentEnemyHealth -= avatarProperties.damage;
             Hud.hndHealthBar();
             if (this.health <= 0) {
-                this.cmpStepAudio.play(false);
+                //this.cmpStepAudio.play(false);
                 return true;
             }
             return false;

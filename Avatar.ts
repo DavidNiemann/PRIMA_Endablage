@@ -60,22 +60,22 @@ namespace Endabgabe {
             this.animations = {};
             let name: string = "Walk";
             let sprite: fcAid.SpriteSheetAnimation = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-            sprite.generateByGrid(fc.Rectangle.GET(30, 772, 33, 33), 7, 10, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(49));
+            sprite.generateByGrid(fc.Rectangle.GET(30, 772, 33, 33), 7, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(49));
             this.animations[name] = sprite;
 
             name = "Idle";
             sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-            sprite.generateByGrid(fc.Rectangle.GET(30, 468, 33, 33), 13, 10, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(49));
+            sprite.generateByGrid(fc.Rectangle.GET(30, 468, 33, 33), 13, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(49));
             this.animations[name] = sprite;
 
             name = "Strike";
             sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-            sprite.generateByGrid(fc.Rectangle.GET(30, 45, 66, 52), 4, 10, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(72));
+            sprite.generateByGrid(fc.Rectangle.GET(30, 45, 66, 52), 4, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(72));
             this.animations[name] = sprite;
 
             name = "jump";
             sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-            sprite.generateByGrid(fc.Rectangle.GET(30, 1071, 33, 33), 7, 10, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(47));
+            sprite.generateByGrid(fc.Rectangle.GET(30, 1071, 33, 33), 7, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(47));
             this.animations[name] = sprite;
         }
 
@@ -143,19 +143,19 @@ namespace Endabgabe {
                 this.setAnimation(AvatarStatus.walk);
             }
 
-
+            this.hndItems();
 
         }
         public strike = (): void => {
             if (gameCondition == GamesConditions.PLAY) {
                 if (this.grounded)
                     if (this.fist.grounded) {
-
-                        this.cmpShwordAudio.play(true);
+                        sounds.playSound(Sounds.Shword);
+                        /*   this.cmpShwordAudio.play(true); */
 
                         this.fist.grounded = false;
-                        this.fist.mtxLocal.translateX(unit);
-                        this.sprite.mtxLocal.translateX(unit);
+                        this.fist.mtxLocal.translateX(unit / 2);
+                        this.sprite.mtxLocal.translateX(unit / 2);
                         this.setAnimation(AvatarStatus.strike);
                         fc.Time.game.setTimer(500, 1, this.endstrike);
                     }
@@ -166,8 +166,8 @@ namespace Endabgabe {
 
         public endstrike = (): void => {
             this.setAnimation(AvatarStatus.idle);
-            this.fist.mtxLocal.translateX(-unit);
-            this.sprite.mtxLocal.translateX(-unit);
+            this.fist.mtxLocal.translateX(-unit / 2);
+            this.sprite.mtxLocal.translateX(-unit / 2);
             this.fist.grounded = true;
         }
 
@@ -182,9 +182,10 @@ namespace Endabgabe {
         public newhealth(_damage: number): void {
             if (this.invulnerable == false) {
                 gameState.health -= _damage;
-                this.cmpHitAudio.play(true);
+                sounds.playSound(Sounds.Hit);
                 if (gameState.health <= 0) {
-                    this.cmpStepAudio.play(false);
+
+                    //this.cmpStepAudio.play(false);
                     hndGameOver();
                 }
                 this.invulnerable = true;
@@ -193,7 +194,7 @@ namespace Endabgabe {
 
 
         }
-       
+
 
         public setVulnerable = (): void => {
             this.invulnerable = false;
@@ -214,17 +215,17 @@ namespace Endabgabe {
                         this.avatarStatus = AvatarStatus.strike;
                         break;
                     case AvatarStatus.idle:
-                        this.cmpStepAudio.play(false);
+                        //  this.cmpStepAudio.play(false);
                         this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Avatar.animations["Idle"]);
                         this.avatarStatus = AvatarStatus.idle;
                         break;
                     case AvatarStatus.walk:
-                        this.cmpStepAudio.play(true);
+                        //  this.cmpStepAudio.play(true);
                         this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Avatar.animations["Walk"]);
                         this.avatarStatus = AvatarStatus.walk;
                         break;
                     case AvatarStatus.jump:
-                        this.cmpStepAudio.play(false);
+                        //  this.cmpStepAudio.play(false);
                         this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Avatar.animations["jump"]);
                         this.avatarStatus = AvatarStatus.jump;
                         break;
@@ -240,8 +241,16 @@ namespace Endabgabe {
             if (_direction.x < 0) { this.flip(true); } else { this.flip(false); }
         }
 
-      
 
+        private hndItems(): void {
+            for (let item of items.getChildren() as HealthUp[]) {
+                if (this.checkCollision(item, false)) {
+                    item.hndUse();
+                }
+
+            }
+
+        }
     }
 
 

@@ -21,8 +21,6 @@ namespace Endabgabe {
             Hud.controller = new fcui.Controller(gameState, gameHud);
             Hud.controller.updateUserInterface();
 
-
-         
  
         }
        
