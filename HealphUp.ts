@@ -20,6 +20,7 @@ namespace Endabgabe {
         public hndUse(): void {
             gameState.health += 1;
             items.removeChild(this);
+            sounds.playSound(Sounds.collect);
         }
         
 

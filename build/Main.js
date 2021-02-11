@@ -764,6 +764,7 @@ var Endabgabe;
             hndUse() {
                 Endabgabe.gameState.health += 1;
                 Endabgabe.items.removeChild(this);
+                Endabgabe.sounds.playSound(Endabgabe.Sounds.collect);
             }
         }
         HealthUp.txtHeart = new fc.TextureImage("../GameAssets/Heart.png");
@@ -820,6 +821,7 @@ var Endabgabe;
         Sounds[Sounds["Shword"] = 2] = "Shword";
         Sounds[Sounds["Jump"] = 3] = "Jump";
         Sounds[Sounds["Land"] = 4] = "Land";
+        Sounds[Sounds["collect"] = 5] = "collect";
     })(Sounds = Endabgabe.Sounds || (Endabgabe.Sounds = {}));
     class Sound {
         constructor() {
@@ -827,27 +829,31 @@ var Endabgabe;
             this.audioShword = new fc.Audio("../GameSounds/mixkit_fast_sword.wav");
             this.cmpShwordAudio = new fc.ComponentAudio(this.audioShword, false, false);
             this.cmpShwordAudio.connect(true);
-            this.cmpShwordAudio.volume = 1;
+            this.cmpShwordAudio.volume = 0.5;
             this.audioHit = new fc.Audio("../GameSounds/mixkit_Hit.mp3");
             this.cmpHitAudio = new fc.ComponentAudio(this.audioHit, false, false);
             this.cmpHitAudio.connect(true);
-            this.cmpHitAudio.volume = 1;
+            this.cmpHitAudio.volume = 0.5;
             this.audioStep = new fc.Audio("../GameSounds/mixkit_step.wav");
             this.cmpStepAudio = new fc.ComponentAudio(this.audioStep, true, false);
             this.cmpStepAudio.connect(true);
-            this.cmpStepAudio.volume = 1;
+            this.cmpStepAudio.volume = 0.5;
             this.audioBackround = new fc.Audio("../GameSounds/MedivalBeep.mp3");
             this.cmpAudioBackround = new fc.ComponentAudio(this.audioBackround, true, false);
             this.cmpAudioBackround.connect(true);
-            this.cmpAudioBackround.volume = 0.2;
+            this.cmpAudioBackround.volume = 0.5;
             this.audioJump = new fc.Audio("../GameSounds/Jump.mp3");
             this.cmpAudioJump = new fc.ComponentAudio(this.audioJump, false, false);
             this.cmpAudioJump.connect(true);
-            this.cmpAudioJump.volume = 0.2;
+            this.cmpAudioJump.volume = 0.1;
             this.audioLand = new fc.Audio("../GameSounds/land.mp3");
             this.cmpAudioLand = new fc.ComponentAudio(this.audioLand, false, false);
             this.cmpAudioLand.connect(true);
             this.cmpAudioLand.volume = 0.5;
+            this.audiocollect = new fc.Audio("../GameSounds/einsammeln.mp3");
+            this.cmpAadioCollect = new fc.ComponentAudio(this.audiocollect, false, false);
+            this.cmpAadioCollect.connect(true);
+            this.cmpAadioCollect.volume = 0.5;
         }
         playSound(_sound) {
             switch (_sound) {
@@ -865,6 +871,9 @@ var Endabgabe;
                     break;
                 case Sounds.Land:
                     this.cmpAudioLand.play(true);
+                    break;
+                case Sounds.collect:
+                    this.cmpAadioCollect.play(true);
                     break;
                 default:
                     break;
