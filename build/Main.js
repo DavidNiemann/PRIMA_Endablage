@@ -158,7 +158,7 @@ var Endabgabe;
             this.hadKeyboard = () => {
                 if (this.fist.grounded)
                     if (fc.Keyboard.isPressedOne([fc.KEYBOARD_CODE.A, fc.KEYBOARD_CODE.ARROW_LEFT, fc.KEYBOARD_CODE.D, fc.KEYBOARD_CODE.ARROW_RIGHT])) {
-                        this.setAnimation(AvatarStatus.walk);
+                        // this.setAnimation(AvatarStatus.walk);
                         this.control.setInput(fc.Keyboard.mapToValue(-1, 0, [fc.KEYBOARD_CODE.A, fc.KEYBOARD_CODE.ARROW_LEFT])
                             + fc.Keyboard.mapToValue(1, 0, [fc.KEYBOARD_CODE.D, fc.KEYBOARD_CODE.ARROW_RIGHT]));
                         this.velocity.x = this.control.getOutput();
@@ -375,16 +375,28 @@ var Endabgabe;
         JOB[JOB["attack"] = 3] = "attack";
     })(JOB = Endabgabe.JOB || (Endabgabe.JOB = {}));
     class Enemy extends Endabgabe.MoveObject {
+        //private static readonly mtrSolidWhite: fc.Material = new fc.Material("SolidWhite", fc.ShaderUniColor, new fc.CoatColored(fc.Color.CSS("WHITE")));
+        //private cmpMaterial: fc.ComponentMaterial;
         constructor(_name, _size, _position, _health, _damage) {
             super(_name, _size, _position);
+            this.activ = false;
             this.job = JOB.idle;
             this.invulnerable = false;
-            this.activ = false;
-            this.endstrike = () => {
+            this.damageTime = false;
+            this.endstrikeAnimation = () => {
                 this.setAnimation(JOB.idle);
+                this.fist.grounded = true;
+            };
+            this.strikeSetHitBox = () => {
+                Endabgabe.sounds.playSound(Endabgabe.Sounds.Shword);
+                this.damageTime = true;
+                this.fist.mtxLocal.translateX(Endabgabe.unit / 2);
+                this.sprite.mtxLocal.translateX(Endabgabe.unit / 2);
+            };
+            this.endstrike = () => {
+                this.damageTime = false;
                 this.fist.mtxLocal.translateX(-Endabgabe.unit / 2);
                 this.sprite.mtxLocal.translateX(-Endabgabe.unit / 2);
-                this.fist.grounded = true;
             };
             this.setVulnerable = () => {
                 this.invulnerable = false;
@@ -405,6 +417,42 @@ var Endabgabe;
             this.sprite.setAnimation(Enemy.animations["Idle"]);
             this.health = _health;
             this.damage = _damage;
+            //this.cmpMaterial = new fc.ComponentMaterial(Enemy.mtrSolidWhite);
+            // this.fist.addComponent(this.cmpMaterial);
+        }
+        static generateSprites(_spritesheet) {
+            this.animations = {};
+            /*  let name: string = "Walk";
+             let sprite: fcAid.SpriteSheetAnimation = new fcAid.SpriteSheetAnimation(name, _spritesheet);
+             sprite.generateByGrid(fc.Rectangle.GET(30, 772, 33, 33), 7, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(49));
+             this.animations[name] = sprite;
+ 
+             name = "Idle";
+             sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
+             sprite.generateByGrid(fc.Rectangle.GET(30, 468, 33, 33), 13, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(49));
+             this.animations[name] = sprite;
+ 
+             name = "Strike";
+             sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
+             sprite.generateByGrid(fc.Rectangle.GET(30, 45, 66, 52), 4, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(72));
+             this.animations[name] = sprite;
+ 
+             name = "jump";
+             sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
+             sprite.generateByGrid(fc.Rectangle.GET(30, 1071, 33, 33), 7, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(47));
+             this.animations[name] = sprite; */
+            let name = "Walk";
+            let sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
+            sprite.generateByGrid(fc.Rectangle.GET(15, 158, 22, 32), 13, 6, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(22));
+            this.animations[name] = sprite;
+            name = "Idle";
+            sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
+            sprite.generateByGrid(fc.Rectangle.GET(14, 119, 24, 32), 11, 6, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(24));
+            this.animations[name] = sprite;
+            name = "Strike";
+            sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
+            sprite.generateByGrid(fc.Rectangle.GET(3, 0, 40, 37), 16, 6, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(43));
+            this.animations[name] = sprite;
         }
         update() {
             super.update();
@@ -445,12 +493,14 @@ var Endabgabe;
                     this.strike();
                 }
                 if (this.fist.grounded == false) {
-                    this.fist.rect.position.x = this.fist.mtxWorld.translation.x - this.fist.rect.size.x / 2;
-                    this.fist.rect.position.y = this.fist.mtxWorld.translation.y - this.fist.rect.size.y / 2;
-                    if (this.fist.checkCollision(Endabgabe.avatar, false)) {
-                        console.log("hit");
-                        //enemies.removeChild(avatar);
-                        Endabgabe.avatar.newhealth(this.damage);
+                    if (this.damageTime) {
+                        this.fist.rect.position.x = this.fist.mtxWorld.translation.x - this.fist.rect.size.x / 2;
+                        this.fist.rect.position.y = this.fist.mtxWorld.translation.y - this.fist.rect.size.y / 2;
+                        if (this.fist.checkCollision(Endabgabe.avatar, false)) {
+                            console.log("hit");
+                            //enemies.removeChild(avatar);
+                            Endabgabe.avatar.newhealth(this.damage);
+                        }
                     }
                 }
             }
@@ -462,25 +512,6 @@ var Endabgabe;
               fc.Time.game.setTimer(10000, 1, this.jump);
           }
    */
-        static generateSprites(_spritesheet) {
-            this.animations = {};
-            let name = "Walk";
-            let sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-            sprite.generateByGrid(fc.Rectangle.GET(30, 772, 33, 33), 7, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(49));
-            this.animations[name] = sprite;
-            name = "Idle";
-            sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-            sprite.generateByGrid(fc.Rectangle.GET(30, 468, 33, 33), 13, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(49));
-            this.animations[name] = sprite;
-            name = "Strike";
-            sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-            sprite.generateByGrid(fc.Rectangle.GET(30, 45, 66, 52), 4, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(72));
-            this.animations[name] = sprite;
-            name = "jump";
-            sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-            sprite.generateByGrid(fc.Rectangle.GET(30, 1071, 33, 33), 7, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(47));
-            this.animations[name] = sprite;
-        }
         setAnimation(_status) {
             if (_status != this.job) {
                 this.job = _status;
@@ -497,7 +528,7 @@ var Endabgabe;
                         break;
                     case JOB.jump:
                         //  this.cmpStepAudio.play(false);
-                        this.sprite.setAnimation(Enemy.animations["jump"]);
+                        //   this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Enemy.animations["jump"]);
                         this.job = JOB.jump;
                         break;
                     case JOB.attack:
@@ -509,21 +540,16 @@ var Endabgabe;
                 }
             }
         }
-        flip(_reverse) {
-            if (this.fist.grounded)
-                this.sprite.mtxLocal.rotation = fc.Vector3.Y(_reverse ? 180 : 0);
-        }
         strike() {
             if (this.grounded)
                 if (this.fist.grounded) {
-                    Endabgabe.sounds.playSound(Endabgabe.Sounds.Shword);
                     /*      this.cmpShwordAudio.play(true); */
                     this.setAnimation(JOB.attack);
                     this.fist.grounded = false;
-                    this.fist.mtxLocal.translateX(Endabgabe.unit / 2);
-                    this.sprite.mtxLocal.translateX(Endabgabe.unit / 2);
                     this.setAnimation(JOB.attack);
-                    fc.Time.game.setTimer(500, 1, this.endstrike);
+                    fc.Time.game.setTimer(1000, 1, this.strikeSetHitBox);
+                    fc.Time.game.setTimer(1500, 1, this.endstrike);
+                    fc.Time.game.setTimer(2500, 1, this.endstrikeAnimation);
                 }
         }
         setHealth(_damage) {
@@ -542,6 +568,10 @@ var Endabgabe;
                 return true;
             }
             return false;
+        }
+        flip(_reverse) {
+            if (this.fist.grounded)
+                this.sprite.mtxLocal.rotation = fc.Vector3.Y(_reverse ? 180 : 0);
         }
     }
     Endabgabe.Enemy = Enemy;
@@ -669,7 +699,7 @@ var Endabgabe;
     }
     async function createEnemyAssets() {
         let txtEnemy = new fc.TextureImage();
-        await txtEnemy.load("../GameAssets/AvatarAssets.png");
+        await txtEnemy.load("../GameAssets/Skeleton.png");
         let coatSprite = new fc.CoatTextured(null, txtEnemy);
         Endabgabe.Enemy.generateSprites(coatSprite);
     }

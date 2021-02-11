@@ -83,7 +83,7 @@ namespace Endabgabe {
             if (this.fist.grounded)
 
                 if (fc.Keyboard.isPressedOne([fc.KEYBOARD_CODE.A, fc.KEYBOARD_CODE.ARROW_LEFT, fc.KEYBOARD_CODE.D, fc.KEYBOARD_CODE.ARROW_RIGHT])) {
-                    this.setAnimation(AvatarStatus.walk);
+                   // this.setAnimation(AvatarStatus.walk);
                     this.control.setInput(
                         fc.Keyboard.mapToValue(-1, 0, [fc.KEYBOARD_CODE.A, fc.KEYBOARD_CODE.ARROW_LEFT])
                         + fc.Keyboard.mapToValue(1, 0, [fc.KEYBOARD_CODE.D, fc.KEYBOARD_CODE.ARROW_RIGHT])

@@ -156,7 +156,7 @@ namespace Endabgabe {
     }
     async function createEnemyAssets(): Promise<void> {
         let txtEnemy: fc.TextureImage = new fc.TextureImage();
-        await txtEnemy.load("../GameAssets/AvatarAssets.png");
+        await txtEnemy.load("../GameAssets/Skeleton.png");
         let coatSprite: fc.CoatTextured = new fc.CoatTextured(null, txtEnemy);
         Enemy.generateSprites(coatSprite);
 
