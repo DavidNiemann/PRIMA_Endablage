@@ -53,7 +53,7 @@ namespace Endabgabe {
         }
 
         public createEnemie(_level: number): Enemy {
-            return new Enemy("enemy", new fc.Vector3(2 * unit, 2 * unit, 1), new fc.Vector3(fc.Random.default.getRange(5, 10) + worldLength * _level, 0, 0), enemyProperties.startLife + _level * enemyProperties.lifePerLevel, Math.floor(enemyProperties.damage + _level * enemyProperties.damagePerLevel));
+            return new Enemy("enemy", new fc.Vector3( unit, 2 * unit, 1), new fc.Vector3(fc.Random.default.getRange(5, 10) + worldLength * _level, 0, 0), enemyProperties.startLife + _level * enemyProperties.lifePerLevel, Math.floor(enemyProperties.damage + _level * enemyProperties.damagePerLevel));
 
         }
 

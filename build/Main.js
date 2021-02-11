@@ -951,7 +951,7 @@ var Endabgabe;
             return levelRoot;
         }
         createEnemie(_level) {
-            return new Endabgabe.Enemy("enemy", new fc.Vector3(2 * Endabgabe.unit, 2 * Endabgabe.unit, 1), new fc.Vector3(fc.Random.default.getRange(5, 10) + Endabgabe.worldLength * _level, 0, 0), Endabgabe.enemyProperties.startLife + _level * Endabgabe.enemyProperties.lifePerLevel, Math.floor(Endabgabe.enemyProperties.damage + _level * Endabgabe.enemyProperties.damagePerLevel));
+            return new Endabgabe.Enemy("enemy", new fc.Vector3(Endabgabe.unit, 2 * Endabgabe.unit, 1), new fc.Vector3(fc.Random.default.getRange(5, 10) + Endabgabe.worldLength * _level, 0, 0), Endabgabe.enemyProperties.startLife + _level * Endabgabe.enemyProperties.lifePerLevel, Math.floor(Endabgabe.enemyProperties.damage + _level * Endabgabe.enemyProperties.damagePerLevel));
         }
         createItems(_level) {
             for (let i = 0; i < fc.Random.default.getRange(0, 3); i++) {

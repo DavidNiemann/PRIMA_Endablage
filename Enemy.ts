@@ -255,7 +255,7 @@ namespace Endabgabe {
 
 
         private flip(_reverse: boolean): void {
-        if(this.fist.grounded)
+        if (this.fist.grounded)
         this.sprite.mtxLocal.rotation = fc.Vector3.Y(_reverse ? 180 : 0);
     }
 
