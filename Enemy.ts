@@ -2,8 +2,9 @@ namespace Endabgabe {
     import fc = FudgeCore;
     import fcAid = FudgeAid;
     export enum JOB {
-        jump, walk, idle, attack
+        walk, idle, attack
     }
+
     export class Enemy extends MoveObject {
 
         private static animations: fcAid.SpriteSheetAnimations;
@@ -19,12 +20,11 @@ namespace Endabgabe {
         private damage: number;
         private invulnerable: boolean = false;
 
-        private damageTime: boolean = false;
-        //private static readonly mtrSolidWhite: fc.Material = new fc.Material("SolidWhite", fc.ShaderUniColor, new fc.CoatColored(fc.Color.CSS("WHITE")));
-        //private cmpMaterial: fc.ComponentMaterial;
+        private attackTime: boolean = false;
+        // private static readonly mtrSolidWhite: fc.Material = new fc.Material("SolidWhite", fc.ShaderUniColor, new fc.CoatColored(fc.Color.CSS("WHITE")));
+        // private cmpMaterial: fc.ComponentMaterial;
         public constructor(_name: string, _size: fc.Vector3, _position: fc.Vector3, _health: number, _damage: number) {
             super(_name, _size, _position);
-
             this.sprite = new fcAid.NodeSprite("sprite");
 
             this.sprite.addComponent(new fc.ComponentTransform());
@@ -33,8 +33,6 @@ namespace Endabgabe {
             this.addChild(this.sprite);
             this.sprite.mtxLocal.translateY(-_size.y / 2);
             this.sprite.mtxLocal.translateZ(0.01);
-            // this.removeComponent(this.getComponents(fc.ComponentMaterial)[0]);
-            //this.jump();
             this.fist = new MoveObject("fist", new fc.Vector3(_size.x, _size.y, _size.z), new fc.Vector3(0, 0, 0));
             this.fist.grounded = true;
             this.fist.mtxLocal.translateY(_size.y / 2);
@@ -43,32 +41,14 @@ namespace Endabgabe {
             this.health = _health;
             this.damage = _damage;
 
-            //this.cmpMaterial = new fc.ComponentMaterial(Enemy.mtrSolidWhite);
-            // this.fist.addComponent(this.cmpMaterial);
+            // this.cmpMaterial = new fc.ComponentMaterial(Enemy.mtrSolidWhite);
+            //  this.addComponent(this.cmpMaterial);
 
 
         }
         public static generateSprites(_spritesheet: fc.CoatTextured): void {
             this.animations = {};
-            /*  let name: string = "Walk";
-             let sprite: fcAid.SpriteSheetAnimation = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-             sprite.generateByGrid(fc.Rectangle.GET(30, 772, 33, 33), 7, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(49));
-             this.animations[name] = sprite;
- 
-             name = "Idle";
-             sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-             sprite.generateByGrid(fc.Rectangle.GET(30, 468, 33, 33), 13, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(49));
-             this.animations[name] = sprite;
- 
-             name = "Strike";
-             sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-             sprite.generateByGrid(fc.Rectangle.GET(30, 45, 66, 52), 4, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(72));
-             this.animations[name] = sprite;
- 
-             name = "jump";
-             sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-             sprite.generateByGrid(fc.Rectangle.GET(30, 1071, 33, 33), 7, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(47));
-             this.animations[name] = sprite; */
+
 
             let name: string = "Walk";
             let sprite: fcAid.SpriteSheetAnimation = new fcAid.SpriteSheetAnimation(name, _spritesheet);
@@ -82,7 +62,7 @@ namespace Endabgabe {
 
             name = "Strike";
             sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-            sprite.generateByGrid(fc.Rectangle.GET(3, 0, 40, 37), 16, 6, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(43));
+            sprite.generateByGrid(fc.Rectangle.GET(3, 0, 40, 37), 17, 6, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(43));
             this.animations[name] = sprite;
         }
 
@@ -90,99 +70,66 @@ namespace Endabgabe {
             super.update();
             if (this.activ && this.invulnerable == false) {
 
-                switch (this.job) {
-                    case JOB.walk:
-                        this.velocity.x = 2 * (avatar.mtxWorld.translation.x - this.mtxWorld.translation.x) / Math.abs(avatar.mtxWorld.translation.x - this.mtxWorld.translation.x);
 
-                        break;
-                    case JOB.idle:
-                        this.setAnimation(JOB.idle);
-                        break;
-                    default:
-                        break;
+                if (this.job == JOB.walk) {
+                    this.velocity.x = 2 * (avatar.mtxWorld.translation.x - this.mtxWorld.translation.x) / Math.abs(avatar.mtxWorld.translation.x - this.mtxWorld.translation.x);
+                }
+                else {
+                    this.velocity.x = 0;
                 }
 
-                if (avatar.mtxWorld.translation.x - this.mtxWorld.translation.x < 0) {
-                    this.flip(true);
-                } else {
-                    this.flip(false);
+
+                if (Math.abs(avatar.mtxWorld.translation.y - this.mtxWorld.translation.y) > unit) {
+
+                    this.setJob(JOB.idle);
                 }
-
-                /* let test: fc.Vector3 = fc.Vector3.DIFFERENCE(avatar.mtxWorld.translation, this.mtxWorld.translation);
-                if (test.y > 3) {
-                    if (this.grounded) {
-                        this.velocity.y = 20;
-                    }
-                } */
-
-                if (this.job != JOB.attack)
-
-
-                    if (this.grounded) {
-                        this.setAnimation(JOB.walk);
-                    }
-                    else {
-                        this.setAnimation(JOB.jump);
-                    }
-
-                if (!this.grounded) {
-                    this.setAnimation(JOB.jump);
-                }
-
-                if (fc.Vector3.DIFFERENCE(avatar.mtxWorld.translation, this.mtxWorld.translation).magnitude < 2 * unit) {
-
+                else if (Math.abs(avatar.mtxWorld.translation.x - this.mtxWorld.translation.x) < 2 * unit) {
                     this.strike();
                 }
+                else {
+                    if (avatar.mtxWorld.translation.x - this.mtxWorld.translation.x < 0) {
+                        this.flip(true);
+                    } else {
+                        this.flip(false);
+                    }
+                    this.setJob(JOB.walk);
+                }
 
-                if (this.fist.grounded == false) {
-                    if (this.damageTime) {
+
+                if (this.attackTime) {
 
 
-                        this.fist.rect.position.x = this.fist.mtxWorld.translation.x - this.fist.rect.size.x / 2;
-                        this.fist.rect.position.y = this.fist.mtxWorld.translation.y - this.fist.rect.size.y / 2;
-                        if (this.fist.checkCollision(avatar, false)) {
+                    this.fist.rect.position.x = this.fist.mtxWorld.translation.x - this.fist.rect.size.x / 2;
+                    this.fist.rect.position.y = this.fist.mtxWorld.translation.y - this.fist.rect.size.y / 2;
+                    if (this.fist.checkCollision(avatar, false)) {
 
-                            console.log("hit");
-                            //enemies.removeChild(avatar);
-                            avatar.newhealth(this.damage);
-                        }
+                        
+                        //enemies.removeChild(avatar);
+                        avatar.newhealth(this.damage);
                     }
 
+
                 }
+
 
             }
         }
 
-        /*   public jump = (): void => {
-              if (this.grounded) {
-                  this.velocity.y = 20;
-              }
-              fc.Time.game.setTimer(10000, 1, this.jump);
-          }
-   */
 
 
-
-
-        public setAnimation(_status: JOB): void {
-            if (_status != this.job) {
+        public setJob(_status: JOB): void {
+          
+            if (_status != this.job  && this.fist.grounded ) {
                 this.job = _status;
                 switch (_status) {
 
                     case JOB.idle:
-                        //  this.cmpStepAudio.play(false);
                         this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Enemy.animations["Idle"]);
                         this.job = JOB.idle;
                         break;
                     case JOB.walk:
-                        //  this.cmpStepAudio.play(true);
                         this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Enemy.animations["Walk"]);
                         this.job = JOB.walk;
-                        break;
-                    case JOB.jump:
-                        //  this.cmpStepAudio.play(false);
-                        //   this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Enemy.animations["jump"]);
-                        this.job = JOB.jump;
                         break;
                     case JOB.attack:
                         this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Enemy.animations["Strike"]);
@@ -191,79 +138,75 @@ namespace Endabgabe {
                     default:
                         break;
                 }
-
+              
             }
 
         }
         public strike(): void {
             if (this.grounded)
-
                 if (this.fist.grounded) {
-
-                    /*      this.cmpShwordAudio.play(true); */
-                    this.setAnimation(JOB.attack);
-                    this.fist.grounded = false;
-                    this.setAnimation(JOB.attack);
+                    this.setJob(JOB.attack);
+                    this.fist.grounded = false; 
+                    this.sprite.mtxLocal.translateX(unit / 2);
                     fc.Time.game.setTimer(1000, 1, this.strikeSetHitBox);
                     fc.Time.game.setTimer(1500, 1, this.endstrike);
                     fc.Time.game.setTimer(2500, 1, this.endstrikeAnimation);
                 }
         }
         public endstrikeAnimation = (): void => {
-            this.setAnimation(JOB.idle);
+            this.setJob(JOB.idle);
             this.fist.grounded = true;
+            this.sprite.mtxLocal.translateX(-unit / 2 );
         }
-          
+
 
         public strikeSetHitBox = (): void => {
-        sounds.playSound(Sounds.Shword);
-        this.damageTime = true;
-        this.fist.mtxLocal.translateX(unit / 2);
-        this.sprite.mtxLocal.translateX(unit / 2);
-    }
+            sounds.playSound(Sounds.Shword);
+            this.attackTime = true;
+            //this.fist.mtxLocal.translateX(unit / 2);
+           
+        }
 
         public endstrike = (): void => {
-        this.damageTime = false;
-        this.fist.mtxLocal.translateX(-unit / 2);
-        this.sprite.mtxLocal.translateX(-unit / 2);
-        
-    }
+            this.attackTime = false;
+            //this.fist.mtxLocal.translateX(-unit / 2);
+        }
 
         public setHealth(_damage: number): boolean {
 
-        if (this.invulnerable) {
+            if (this.invulnerable) {
+                return false;
+            }
+
+            this.invulnerable = true;
+            fc.Time.game.setTimer(500, 1, this.setVulnerable/* function (): void { this.invulnerable  } */);
+            this.health -= _damage;
+            sounds.playSound(Sounds.Hit);
+
+            gameState.currentEnemyHealth -= avatarProperties.damage;
+            Hud.hndHealthBar();
+            if (this.health <= 0) {
+
+                return true;
+            }
             return false;
-        }
 
-        this.invulnerable = true;
-        fc.Time.game.setTimer(500, 1, this.setVulnerable/* function (): void { this.invulnerable  } */);
-        this.health -= _damage;
-        sounds.playSound(Sounds.Hit);
-        /*    this.cmpHitAudio.play(true); */
-        gameState.currentEnemyHealth -= avatarProperties.damage;
-        Hud.hndHealthBar();
-        if (this.health <= 0) {
-            //this.cmpStepAudio.play(false);
-            return true;
         }
-        return false;
-
-    }
         public setVulnerable = (): void => {
-        this.invulnerable = false;
-    }
+            this.invulnerable = false;
+        }
 
 
         private flip(_reverse: boolean): void {
-        if (this.fist.grounded)
-        this.sprite.mtxLocal.rotation = fc.Vector3.Y(_reverse ? 180 : 0);
+            if (this.fist.grounded)
+                this.sprite.mtxLocal.rotation = fc.Vector3.Y(_reverse ? 180 : 0);
+        }
+
+
+
+
+
     }
-
-
-
-
-
-}
 
 }
 

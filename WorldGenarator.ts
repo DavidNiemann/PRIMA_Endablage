@@ -53,7 +53,10 @@ namespace Endabgabe {
         }
 
         public createEnemie(_level: number): Enemy {
-            return new Enemy("enemy", new fc.Vector3( unit, 2 * unit, 1), new fc.Vector3(fc.Random.default.getRange(5, 10) + worldLength * _level, 0, 0), enemyProperties.startLife + _level * enemyProperties.lifePerLevel, Math.floor(enemyProperties.damage + _level * enemyProperties.damagePerLevel));
+
+            return new Enemy("enemy", new fc.Vector3(unit, 2 * unit, 1), new fc.Vector3(fc.Random.default.getRange(5, 10) + worldLength * _level, 0, 0), enemyProperties.startLife + _level * enemyProperties.lifePerLevel, Math.floor(enemyProperties.damage + _level * enemyProperties.damagePerLevel));
+
+
 
         }
 
@@ -66,23 +69,25 @@ namespace Endabgabe {
         }
 
         public createNewWorld(_worldNumber: number): void {
+            //for (let j: number = 0; j < Math.floor(_worldNumber / 10) + 1; j++) {
             enemies.addChild(this.createEnemie(_worldNumber + 1));
+            // }
             gameWorld.addChild(this.genarateWorld(_worldNumber + 1, fc.Vector3.X((_worldNumber + 1) * worldLength)));
 
-            root.addChild(new Background("Background", new fc.Vector3(worldLength, worldhight, unit ), fc.Vector3.X((_worldNumber + 1) * worldLength))); 
+            root.addChild(new Background("Background", new fc.Vector3(worldLength, worldhight, unit), fc.Vector3.X((_worldNumber + 1) * worldLength)));
 
             /*gameWorld.getChildrenByName("level" + _worldNumber)[0].removeChild(gameWorld.getChildrenByName("level" + _worldNumber)[0].getChildrenByName("RightWall")[0]);
              gameWorld.getChildrenByName("level" + _worldNumber + 1)[0].removeChild(this.tempWall); */
             gameWorld.getChild(0).removeChild(gameWorld.getChild(0).getChildrenByName("RightWall")[0]);
             gameWorld.getChild(1).removeChild(this.tempWall);
-        }
 
+        }
         public deleteoldWorld(_worldNumber?: number): void {
             gameWorld.getChild(1).addChild(this.tempWall);
             //gameWorld.getChildrenByName("level" + _worldNumber)[0].addChild(this.tempWall);
             gameWorld.removeChild(gameWorld.getChild(0));
             for (let enemy of enemies.getChildren() as Enemy[]) {
-                enemy.setAnimation(JOB.walk);
+                // enemy.setJob(JOB.walk);
                 enemy.activ = true;
             }
             /* gameWorld.getChildrenByName("level" + _worldNumber + 1 )[0].addChild(this.tempWall);

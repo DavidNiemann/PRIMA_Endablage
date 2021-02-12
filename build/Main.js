@@ -369,34 +369,32 @@ var Endabgabe;
     var fcAid = FudgeAid;
     let JOB;
     (function (JOB) {
-        JOB[JOB["jump"] = 0] = "jump";
-        JOB[JOB["walk"] = 1] = "walk";
-        JOB[JOB["idle"] = 2] = "idle";
-        JOB[JOB["attack"] = 3] = "attack";
+        JOB[JOB["walk"] = 0] = "walk";
+        JOB[JOB["idle"] = 1] = "idle";
+        JOB[JOB["attack"] = 2] = "attack";
     })(JOB = Endabgabe.JOB || (Endabgabe.JOB = {}));
     class Enemy extends Endabgabe.MoveObject {
-        //private static readonly mtrSolidWhite: fc.Material = new fc.Material("SolidWhite", fc.ShaderUniColor, new fc.CoatColored(fc.Color.CSS("WHITE")));
-        //private cmpMaterial: fc.ComponentMaterial;
+        // private static readonly mtrSolidWhite: fc.Material = new fc.Material("SolidWhite", fc.ShaderUniColor, new fc.CoatColored(fc.Color.CSS("WHITE")));
+        // private cmpMaterial: fc.ComponentMaterial;
         constructor(_name, _size, _position, _health, _damage) {
             super(_name, _size, _position);
             this.activ = false;
             this.job = JOB.idle;
             this.invulnerable = false;
-            this.damageTime = false;
+            this.attackTime = false;
             this.endstrikeAnimation = () => {
-                this.setAnimation(JOB.idle);
+                this.setJob(JOB.idle);
                 this.fist.grounded = true;
+                this.sprite.mtxLocal.translateX(-Endabgabe.unit / 2);
             };
             this.strikeSetHitBox = () => {
                 Endabgabe.sounds.playSound(Endabgabe.Sounds.Shword);
-                this.damageTime = true;
-                this.fist.mtxLocal.translateX(Endabgabe.unit / 2);
-                this.sprite.mtxLocal.translateX(Endabgabe.unit / 2);
+                this.attackTime = true;
+                //this.fist.mtxLocal.translateX(unit / 2);
             };
             this.endstrike = () => {
-                this.damageTime = false;
-                this.fist.mtxLocal.translateX(-Endabgabe.unit / 2);
-                this.sprite.mtxLocal.translateX(-Endabgabe.unit / 2);
+                this.attackTime = false;
+                //this.fist.mtxLocal.translateX(-unit / 2);
             };
             this.setVulnerable = () => {
                 this.invulnerable = false;
@@ -408,8 +406,6 @@ var Endabgabe;
             this.addChild(this.sprite);
             this.sprite.mtxLocal.translateY(-_size.y / 2);
             this.sprite.mtxLocal.translateZ(0.01);
-            // this.removeComponent(this.getComponents(fc.ComponentMaterial)[0]);
-            //this.jump();
             this.fist = new Endabgabe.MoveObject("fist", new fc.Vector3(_size.x, _size.y, _size.z), new fc.Vector3(0, 0, 0));
             this.fist.grounded = true;
             this.fist.mtxLocal.translateY(_size.y / 2);
@@ -417,30 +413,11 @@ var Endabgabe;
             this.sprite.setAnimation(Enemy.animations["Idle"]);
             this.health = _health;
             this.damage = _damage;
-            //this.cmpMaterial = new fc.ComponentMaterial(Enemy.mtrSolidWhite);
-            // this.fist.addComponent(this.cmpMaterial);
+            // this.cmpMaterial = new fc.ComponentMaterial(Enemy.mtrSolidWhite);
+            //  this.addComponent(this.cmpMaterial);
         }
         static generateSprites(_spritesheet) {
             this.animations = {};
-            /*  let name: string = "Walk";
-             let sprite: fcAid.SpriteSheetAnimation = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-             sprite.generateByGrid(fc.Rectangle.GET(30, 772, 33, 33), 7, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(49));
-             this.animations[name] = sprite;
- 
-             name = "Idle";
-             sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-             sprite.generateByGrid(fc.Rectangle.GET(30, 468, 33, 33), 13, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(49));
-             this.animations[name] = sprite;
- 
-             name = "Strike";
-             sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-             sprite.generateByGrid(fc.Rectangle.GET(30, 45, 66, 52), 4, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(72));
-             this.animations[name] = sprite;
- 
-             name = "jump";
-             sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-             sprite.generateByGrid(fc.Rectangle.GET(30, 1071, 33, 33), 7, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(47));
-             this.animations[name] = sprite; */
             let name = "Walk";
             let sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
             sprite.generateByGrid(fc.Rectangle.GET(15, 158, 22, 32), 13, 6, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(22));
@@ -451,85 +428,54 @@ var Endabgabe;
             this.animations[name] = sprite;
             name = "Strike";
             sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-            sprite.generateByGrid(fc.Rectangle.GET(3, 0, 40, 37), 16, 6, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(43));
+            sprite.generateByGrid(fc.Rectangle.GET(3, 0, 40, 37), 17, 6, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(43));
             this.animations[name] = sprite;
         }
         update() {
             super.update();
             if (this.activ && this.invulnerable == false) {
-                switch (this.job) {
-                    case JOB.walk:
-                        this.velocity.x = 2 * (Endabgabe.avatar.mtxWorld.translation.x - this.mtxWorld.translation.x) / Math.abs(Endabgabe.avatar.mtxWorld.translation.x - this.mtxWorld.translation.x);
-                        break;
-                    case JOB.idle:
-                        this.setAnimation(JOB.idle);
-                        break;
-                    default:
-                        break;
-                }
-                if (Endabgabe.avatar.mtxWorld.translation.x - this.mtxWorld.translation.x < 0) {
-                    this.flip(true);
+                if (this.job == JOB.walk) {
+                    this.velocity.x = 2 * (Endabgabe.avatar.mtxWorld.translation.x - this.mtxWorld.translation.x) / Math.abs(Endabgabe.avatar.mtxWorld.translation.x - this.mtxWorld.translation.x);
                 }
                 else {
-                    this.flip(false);
+                    this.velocity.x = 0;
                 }
-                /* let test: fc.Vector3 = fc.Vector3.DIFFERENCE(avatar.mtxWorld.translation, this.mtxWorld.translation);
-                if (test.y > 3) {
-                    if (this.grounded) {
-                        this.velocity.y = 20;
-                    }
-                } */
-                if (this.job != JOB.attack)
-                    if (this.grounded) {
-                        this.setAnimation(JOB.walk);
-                    }
-                    else {
-                        this.setAnimation(JOB.jump);
-                    }
-                if (!this.grounded) {
-                    this.setAnimation(JOB.jump);
+                if (Math.abs(Endabgabe.avatar.mtxWorld.translation.y - this.mtxWorld.translation.y) > Endabgabe.unit) {
+                    this.setJob(JOB.idle);
                 }
-                if (fc.Vector3.DIFFERENCE(Endabgabe.avatar.mtxWorld.translation, this.mtxWorld.translation).magnitude < 2 * Endabgabe.unit) {
+                else if (Math.abs(Endabgabe.avatar.mtxWorld.translation.x - this.mtxWorld.translation.x) < 2 * Endabgabe.unit) {
                     this.strike();
                 }
-                if (this.fist.grounded == false) {
-                    if (this.damageTime) {
-                        this.fist.rect.position.x = this.fist.mtxWorld.translation.x - this.fist.rect.size.x / 2;
-                        this.fist.rect.position.y = this.fist.mtxWorld.translation.y - this.fist.rect.size.y / 2;
-                        if (this.fist.checkCollision(Endabgabe.avatar, false)) {
-                            console.log("hit");
-                            //enemies.removeChild(avatar);
-                            Endabgabe.avatar.newhealth(this.damage);
-                        }
+                else {
+                    if (Endabgabe.avatar.mtxWorld.translation.x - this.mtxWorld.translation.x < 0) {
+                        this.flip(true);
+                    }
+                    else {
+                        this.flip(false);
+                    }
+                    this.setJob(JOB.walk);
+                }
+                if (this.attackTime) {
+                    this.fist.rect.position.x = this.fist.mtxWorld.translation.x - this.fist.rect.size.x / 2;
+                    this.fist.rect.position.y = this.fist.mtxWorld.translation.y - this.fist.rect.size.y / 2;
+                    if (this.fist.checkCollision(Endabgabe.avatar, false)) {
+                        //enemies.removeChild(avatar);
+                        Endabgabe.avatar.newhealth(this.damage);
                     }
                 }
             }
         }
-        /*   public jump = (): void => {
-              if (this.grounded) {
-                  this.velocity.y = 20;
-              }
-              fc.Time.game.setTimer(10000, 1, this.jump);
-          }
-   */
-        setAnimation(_status) {
-            if (_status != this.job) {
+        setJob(_status) {
+            if (_status != this.job && this.fist.grounded) {
                 this.job = _status;
                 switch (_status) {
                     case JOB.idle:
-                        //  this.cmpStepAudio.play(false);
                         this.sprite.setAnimation(Enemy.animations["Idle"]);
                         this.job = JOB.idle;
                         break;
                     case JOB.walk:
-                        //  this.cmpStepAudio.play(true);
                         this.sprite.setAnimation(Enemy.animations["Walk"]);
                         this.job = JOB.walk;
-                        break;
-                    case JOB.jump:
-                        //  this.cmpStepAudio.play(false);
-                        //   this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Enemy.animations["jump"]);
-                        this.job = JOB.jump;
                         break;
                     case JOB.attack:
                         this.sprite.setAnimation(Enemy.animations["Strike"]);
@@ -543,10 +489,9 @@ var Endabgabe;
         strike() {
             if (this.grounded)
                 if (this.fist.grounded) {
-                    /*      this.cmpShwordAudio.play(true); */
-                    this.setAnimation(JOB.attack);
+                    this.setJob(JOB.attack);
                     this.fist.grounded = false;
-                    this.setAnimation(JOB.attack);
+                    this.sprite.mtxLocal.translateX(Endabgabe.unit / 2);
                     fc.Time.game.setTimer(1000, 1, this.strikeSetHitBox);
                     fc.Time.game.setTimer(1500, 1, this.endstrike);
                     fc.Time.game.setTimer(2500, 1, this.endstrikeAnimation);
@@ -560,11 +505,9 @@ var Endabgabe;
             fc.Time.game.setTimer(500, 1, this.setVulnerable /* function (): void { this.invulnerable  } */);
             this.health -= _damage;
             Endabgabe.sounds.playSound(Endabgabe.Sounds.Hit);
-            /*    this.cmpHitAudio.play(true); */
             Endabgabe.gameState.currentEnemyHealth -= Endabgabe.avatarProperties.damage;
             Endabgabe.Hud.hndHealthBar();
             if (this.health <= 0) {
-                //this.cmpStepAudio.play(false);
                 return true;
             }
             return false;
@@ -959,7 +902,9 @@ var Endabgabe;
             }
         }
         createNewWorld(_worldNumber) {
+            //for (let j: number = 0; j < Math.floor(_worldNumber / 10) + 1; j++) {
             Endabgabe.enemies.addChild(this.createEnemie(_worldNumber + 1));
+            // }
             Endabgabe.gameWorld.addChild(this.genarateWorld(_worldNumber + 1, fc.Vector3.X((_worldNumber + 1) * Endabgabe.worldLength)));
             Endabgabe.root.addChild(new Endabgabe.Background("Background", new fc.Vector3(Endabgabe.worldLength, Endabgabe.worldhight, Endabgabe.unit), fc.Vector3.X((_worldNumber + 1) * Endabgabe.worldLength)));
             /*gameWorld.getChildrenByName("level" + _worldNumber)[0].removeChild(gameWorld.getChildrenByName("level" + _worldNumber)[0].getChildrenByName("RightWall")[0]);
@@ -972,7 +917,7 @@ var Endabgabe;
             //gameWorld.getChildrenByName("level" + _worldNumber)[0].addChild(this.tempWall);
             Endabgabe.gameWorld.removeChild(Endabgabe.gameWorld.getChild(0));
             for (let enemy of Endabgabe.enemies.getChildren()) {
-                enemy.setAnimation(Endabgabe.JOB.walk);
+                // enemy.setJob(JOB.walk);
                 enemy.activ = true;
             }
             /* gameWorld.getChildrenByName("level" + _worldNumber + 1 )[0].addChild(this.tempWall);
