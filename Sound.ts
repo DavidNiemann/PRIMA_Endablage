@@ -20,7 +20,7 @@ namespace Endabgabe {
         private cmpStepAudio: fc.ComponentAudio;
         private cmpAudioBackround: fc.ComponentAudio;
         private cmpAudioJump: fc.ComponentAudio;
-        private cmpAadioCollect: fc.ComponentAudio;
+        private cmpAudioCollect: fc.ComponentAudio;
 
         private cmpAudioLand: fc.ComponentAudio;
         private backRound0n: boolean = false;
@@ -58,9 +58,9 @@ namespace Endabgabe {
             this.cmpAudioLand.volume = 0.5;
 
             this.audiocollect = new fc.Audio("../GameSounds/einsammeln.mp3");
-            this.cmpAadioCollect = new fc.ComponentAudio(this.audiocollect, false, false);
-            this.cmpAadioCollect.connect(true);
-            this.cmpAadioCollect.volume = 0.5;
+            this.cmpAudioCollect = new fc.ComponentAudio(this.audiocollect, false, false);
+            this.cmpAudioCollect.connect(true);
+            this.cmpAudioCollect.volume = 0.5;
 
         }
 
@@ -89,7 +89,7 @@ namespace Endabgabe {
                     break;
 
                 case Sounds.collect:
-                    this.cmpAadioCollect.play(true);
+                    this.cmpAudioCollect.play(true);
                     break;
 
                 default:

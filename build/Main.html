@@ -18,9 +18,9 @@
     <canvas></canvas>
     <div id="hud">
         <div id="healthDiv">
-         
+
             <label for="health">Health</label>
-            <input  id="health" type="number" key="health" disabled />
+            <input id="health" type="number" key="health" disabled />
         </div>
         <div id="scoreDiv">
 
@@ -33,10 +33,19 @@
                 <div id="healthEnemy"></div>
                 <input id="enemyHealth" type="number" key="currentEnemyHealth" disabled />
             </div>
-            
+
         </div>
     </div>
-    <div id="gameButtenDiv"></div>
+    <div id="gameButtenDiv">
+
+    </div>
+    
+    <script type="text/javascript"> document.addEventListener('click', function (e) {
+            if (document.activeElement.toString() == '[object HTMLButtonElement]') { document.activeElement.blur(); }
+        });
+    </script>
+
+    
 </body>
 
 </html>

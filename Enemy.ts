@@ -77,24 +77,25 @@ namespace Endabgabe {
                 else {
                     this.velocity.x = 0;
                 }
-
+                
+                if (avatar.mtxWorld.translation.x - this.mtxWorld.translation.x < 0) {
+                    this.flip(true);
+                } else {
+                    this.flip(false);
+                }
 
                 if (Math.abs(avatar.mtxWorld.translation.y - this.mtxWorld.translation.y) > unit) {
 
                     this.setJob(JOB.idle);
                 }
-                else if (Math.abs(avatar.mtxWorld.translation.x - this.mtxWorld.translation.x) < 2 * unit) {
+                else if (Math.abs(avatar.mtxWorld.translation.x - this.mtxWorld.translation.x) < 2 * unit ) {
                     this.strike();
                 }
                 else {
-                    if (avatar.mtxWorld.translation.x - this.mtxWorld.translation.x < 0) {
-                        this.flip(true);
-                    } else {
-                        this.flip(false);
-                    }
                     this.setJob(JOB.walk);
                 }
 
+               
 
                 if (this.attackTime) {
 

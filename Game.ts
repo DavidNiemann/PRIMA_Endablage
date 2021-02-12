@@ -31,6 +31,9 @@ namespace Endabgabe {
     export let enemyProperties: EnemyProperties;
 
     async function sceneLoad(_event?: Event): Promise<void> {
+        var element: Document = document;
+        element.onselectstart = function (): boolean { return false; } ;
+        element.onmousedown = function (): boolean  { return false; }; 
         sounds = new Sound();
         hndGameConditiones();
 
@@ -54,8 +57,8 @@ namespace Endabgabe {
         worldGenerator = new WorldGenarator("world");
         genarateWorld(worldNumber);
 
-        root.addChild(new Background("Background", new fc.Vector3(worldLength, worldhight, unit ), fc.Vector3.X(0)));
-        
+        root.addChild(new Background("Background", new fc.Vector3(worldLength, worldhight, unit), fc.Vector3.X(0)));
+
         await createAvatarAssets();
         avatar = new Avatar("Avatar", new fc.Vector3(2 * unit, 2 * unit, 1), fc.Vector3.ZERO());
 
@@ -83,6 +86,9 @@ namespace Endabgabe {
         document.addEventListener("click", avatar.strike);
         //canvas.addEventListener("click", canvas.requestPointerLock);
         //canvas.addEventListener("mousemove", avatar.hndMouse);
+        document.addEventListener("click", function (): void {
+            if (document.activeElement.toString() == "[objnect HTMLButtonElement]") { (<HTMLButtonElement>document.activeElement).blur(); }
+        });
 
         Hud.start();
         Hud.setHubhealth();
@@ -94,7 +100,7 @@ namespace Endabgabe {
         fc.Loop.addEventListener(fc.EVENT.LOOP_FRAME, hndLoop);
         fc.Loop.start(fc.LOOP_MODE.TIME_GAME, 60);
         viewport.draw();
-       
+
     }
 
 
@@ -212,13 +218,13 @@ namespace Endabgabe {
                     butten.value = "pause";
                     butten.innerHTML = "pause";
                     sounds.hndBackroundSound(true);
-
                     break;
                 case "pause":
                     gameCondition = GamesConditions.BREAK;
                     butten.value = "start";
                     butten.innerHTML = "start";
                     sounds.hndBackroundSound(false);
+
                     break;
                 case "restart":
                     let gameOverText: HTMLParagraphElement = (<HTMLParagraphElement>document.getElementById("gameover"));

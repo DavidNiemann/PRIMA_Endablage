@@ -440,6 +440,12 @@ var Endabgabe;
                 else {
                     this.velocity.x = 0;
                 }
+                if (Endabgabe.avatar.mtxWorld.translation.x - this.mtxWorld.translation.x < 0) {
+                    this.flip(true);
+                }
+                else {
+                    this.flip(false);
+                }
                 if (Math.abs(Endabgabe.avatar.mtxWorld.translation.y - this.mtxWorld.translation.y) > Endabgabe.unit) {
                     this.setJob(JOB.idle);
                 }
@@ -447,12 +453,6 @@ var Endabgabe;
                     this.strike();
                 }
                 else {
-                    if (Endabgabe.avatar.mtxWorld.translation.x - this.mtxWorld.translation.x < 0) {
-                        this.flip(true);
-                    }
-                    else {
-                        this.flip(false);
-                    }
                     this.setJob(JOB.walk);
                 }
                 if (this.attackTime) {
@@ -549,6 +549,9 @@ var Endabgabe;
     let worldGenerator;
     let movableCamara = false;
     async function sceneLoad(_event) {
+        var element = document;
+        element.onselectstart = function () { return false; };
+        element.onmousedown = function () { return false; };
         Endabgabe.sounds = new Endabgabe.Sound();
         hndGameConditiones();
         const canvas = document.querySelector("canvas");
@@ -586,6 +589,11 @@ var Endabgabe;
         document.addEventListener("click", Endabgabe.avatar.strike);
         //canvas.addEventListener("click", canvas.requestPointerLock);
         //canvas.addEventListener("mousemove", avatar.hndMouse);
+        document.addEventListener("click", function () {
+            if (document.activeElement.toString() == "[objnect HTMLButtonElement]") {
+                document.activeElement.blur();
+            }
+        });
         Endabgabe.Hud.start();
         Endabgabe.Hud.setHubhealth();
         Endabgabe.viewport = new fc.Viewport();
@@ -824,9 +832,9 @@ var Endabgabe;
             this.cmpAudioLand.connect(true);
             this.cmpAudioLand.volume = 0.5;
             this.audiocollect = new fc.Audio("../GameSounds/einsammeln.mp3");
-            this.cmpAadioCollect = new fc.ComponentAudio(this.audiocollect, false, false);
-            this.cmpAadioCollect.connect(true);
-            this.cmpAadioCollect.volume = 0.5;
+            this.cmpAudioCollect = new fc.ComponentAudio(this.audiocollect, false, false);
+            this.cmpAudioCollect.connect(true);
+            this.cmpAudioCollect.volume = 0.5;
         }
         playSound(_sound) {
             switch (_sound) {
@@ -846,7 +854,7 @@ var Endabgabe;
                     this.cmpAudioLand.play(true);
                     break;
                 case Sounds.collect:
-                    this.cmpAadioCollect.play(true);
+                    this.cmpAudioCollect.play(true);
                     break;
                 default:
                     break;
