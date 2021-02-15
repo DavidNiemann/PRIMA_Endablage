@@ -62,7 +62,8 @@ namespace Endabgabe {
 
 
         public createItems(_level: number): void {
-            for (let i: number = 0; i < fc.Random.default.getRange(0, 3); i++) {
+            items.removeAllChildren();
+            for (let i: number = 0; i < fc.Random.default.getRange(0, 2); i++) {
 
                 items.addChild(new HealthUp("HealthUp", fc.Vector3.ONE(unit), new fc.Vector3(fc.Random.default.getRange(worldLength * _level - worldLength / 2, worldLength * _level + worldLength / 2), 0, 0)));
             }

@@ -251,10 +251,11 @@ namespace Endabgabe {
         gameCondition = GamesConditions.GAMEOVER;
         let butten: HTMLButtonElement = (<HTMLButtonElement>document.getElementById("PSButten"));
         if (butten) { butten.style.display = "none"; }
-        let buttenDiv: HTMLDivElement = (<HTMLDivElement>document.getElementById("gameButtenDiv"));
+        let textDiv: HTMLDivElement = (<HTMLDivElement>document.getElementById("GameOverText"));
         let gameOverText: HTMLParagraphElement = document.createElement("p");
         gameOverText.id = "gameover";
-        gameOverText.innerHTML = "Game Over"; buttenDiv.appendChild(gameOverText);
+        gameOverText.innerHTML = "Game Over"; 
+        textDiv.appendChild(gameOverText);
     }
 
 

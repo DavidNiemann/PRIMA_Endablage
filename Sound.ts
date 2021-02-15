@@ -3,24 +3,26 @@ namespace Endabgabe {
     // import fcaid = FudgeAid;
 
     export enum Sounds {
-        Step, Hit, Shword, Jump, Land, collect
+        Step, AvatarHit, Shword, Jump, Land, collect, EnemyHit
     }
 
     export class Sound {
         private audioShword: fc.Audio;
-        private audioHit: fc.Audio;
+        private audioAvatarHit: fc.Audio;
         private audioStep: fc.Audio;
         private audioBackround: fc.Audio;
         private audioJump: fc.Audio;
         private audioLand: fc.Audio;
         private audiocollect: fc.Audio;
+        private audioEnemyHit: fc.Audio;
 
         private cmpShwordAudio: fc.ComponentAudio;
-        private cmpHitAudio: fc.ComponentAudio;
+        private cmpAvatarHitAudio: fc.ComponentAudio;
         private cmpStepAudio: fc.ComponentAudio;
         private cmpAudioBackround: fc.ComponentAudio;
         private cmpAudioJump: fc.ComponentAudio;
         private cmpAudioCollect: fc.ComponentAudio;
+        private cmpEnemyHitAudio: fc.ComponentAudio;
 
         private cmpAudioLand: fc.ComponentAudio;
         private backRound0n: boolean = false;
@@ -32,10 +34,10 @@ namespace Endabgabe {
             this.cmpShwordAudio.connect(true);
             this.cmpShwordAudio.volume = 0.5;
 
-            this.audioHit = new fc.Audio("../GameSounds/mixkit_Hit.mp3");
-            this.cmpHitAudio = new fc.ComponentAudio(this.audioHit, false, false);
-            this.cmpHitAudio.connect(true);
-            this.cmpHitAudio.volume = 0.5;
+            this.audioAvatarHit = new fc.Audio("../GameSounds/mixkit_Hit.mp3");
+            this.cmpAvatarHitAudio = new fc.ComponentAudio(this.audioAvatarHit, false, false);
+            this.cmpAvatarHitAudio.connect(true);
+            this.cmpAvatarHitAudio.volume = 0.5;
 
             this.audioStep = new fc.Audio("../GameSounds/mixkit_step.wav");
             this.cmpStepAudio = new fc.ComponentAudio(this.audioStep, true, false);
@@ -62,14 +64,20 @@ namespace Endabgabe {
             this.cmpAudioCollect.connect(true);
             this.cmpAudioCollect.volume = 0.5;
 
+            
+            this.audioEnemyHit = new fc.Audio("../GameSounds/EnemyHit.mp3");
+            this.cmpEnemyHitAudio = new fc.ComponentAudio(this.audioEnemyHit, false, false);
+            this.cmpEnemyHitAudio.connect(true);
+            this.cmpEnemyHitAudio.volume = 0.5;
+
         }
 
 
         public playSound(_sound: Sounds): void {
             switch (_sound) {
 
-                case Sounds.Hit:
-                    this.cmpHitAudio.play(true);
+                case Sounds.AvatarHit:
+                    this.cmpAvatarHitAudio.play(true);
                     break;
 
                 case Sounds.Shword:
@@ -91,7 +99,11 @@ namespace Endabgabe {
                 case Sounds.collect:
                     this.cmpAudioCollect.play(true);
                     break;
-
+                   
+                case Sounds.EnemyHit:
+                    this.cmpEnemyHitAudio.play(true);
+                    break;
+                    
                 default:
                     break;
             }

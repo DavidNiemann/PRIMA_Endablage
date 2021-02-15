@@ -128,7 +128,7 @@ namespace Endabgabe {
                         // enemies.removeChild(enemy);
 
                         if (enemy.setHealth(avatarProperties.damage)) {
-                            enemies.removeChild(enemy);
+                            //enemies.removeChild(enemy);
                             gameState.score += 1;
 
                         }
@@ -153,7 +153,7 @@ namespace Endabgabe {
                 if (this.grounded)
                     if (this.fist.grounded) {
                         sounds.playSound(Sounds.Shword);
-                        /*   this.cmpShwordAudio.play(true); */
+                     
 
                         this.fist.grounded = false;
                         this.fist.mtxLocal.translateX(unit / 2);
@@ -171,6 +171,7 @@ namespace Endabgabe {
             this.fist.mtxLocal.translateX(-unit / 2);
             this.sprite.mtxLocal.translateX(-unit / 2);
             this.fist.grounded = true;
+            
         }
 
         public hndMouse = (_event: MouseEvent): void => {
@@ -184,14 +185,13 @@ namespace Endabgabe {
         public newhealth(_damage: number): void {
             if (this.invulnerable == false) {
                 gameState.health -= _damage;
-                sounds.playSound(Sounds.Hit);
+                this.invulnerable = true;
+                sounds.playSound(Sounds.AvatarHit);
                 if (gameState.health <= 0) {
-
-                    //this.cmpStepAudio.play(false);
                     hndGameOver();
                 }
-                this.invulnerable = true;
-                fc.Time.game.setTimer(500, 1, this.setVulnerable/* function (): void { this.invulnerable  } */);
+                
+             
             }
 
 

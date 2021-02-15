@@ -2,7 +2,7 @@ namespace Endabgabe {
     import fc = FudgeCore;
     import fcAid = FudgeAid;
     export enum JOB {
-        walk, idle, attack
+        walk, idle, attack, die
     }
 
     export class Enemy extends MoveObject {
@@ -64,9 +64,19 @@ namespace Endabgabe {
             sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
             sprite.generateByGrid(fc.Rectangle.GET(3, 0, 40, 37), 17, 6, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(43));
             this.animations[name] = sprite;
+
+            name = "Die";
+            sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
+            sprite.generateByGrid(fc.Rectangle.GET(33, 40, 30, 32), 16, 6, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(33));
+            this.animations[name] = sprite;
         }
 
         public update(): void {
+            if (this.health <= 0)
+                this.setJob(JOB.die);
+            if (this.job == JOB.die) {
+                return;
+            }
             super.update();
             if (this.activ && this.invulnerable == false) {
 
@@ -77,7 +87,7 @@ namespace Endabgabe {
                 else {
                     this.velocity.x = 0;
                 }
-                
+
                 if (avatar.mtxWorld.translation.x - this.mtxWorld.translation.x < 0) {
                     this.flip(true);
                 } else {
@@ -88,14 +98,14 @@ namespace Endabgabe {
 
                     this.setJob(JOB.idle);
                 }
-                else if (Math.abs(avatar.mtxWorld.translation.x - this.mtxWorld.translation.x) < 2 * unit ) {
+                else if (Math.abs(avatar.mtxWorld.translation.x - this.mtxWorld.translation.x) < 2 * unit) {
                     this.strike();
                 }
                 else {
                     this.setJob(JOB.walk);
                 }
 
-               
+
 
                 if (this.attackTime) {
 
@@ -104,7 +114,7 @@ namespace Endabgabe {
                     this.fist.rect.position.y = this.fist.mtxWorld.translation.y - this.fist.rect.size.y / 2;
                     if (this.fist.checkCollision(avatar, false)) {
 
-                        
+
                         //enemies.removeChild(avatar);
                         avatar.newhealth(this.damage);
                     }
@@ -119,8 +129,8 @@ namespace Endabgabe {
 
 
         public setJob(_status: JOB): void {
-          
-            if (_status != this.job  && this.fist.grounded ) {
+
+            if (_status != this.job && this.fist.grounded || _status == JOB.die && this.job != JOB.die) {
                 this.job = _status;
                 switch (_status) {
 
@@ -136,10 +146,14 @@ namespace Endabgabe {
                         this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Enemy.animations["Strike"]);
                         this.job = JOB.attack;
                         break;
+                    case JOB.die:
+                        this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Enemy.animations["Die"]);
+                        this.job = JOB.die;
+                        break;
                     default:
                         break;
                 }
-              
+
             }
 
         }
@@ -147,17 +161,17 @@ namespace Endabgabe {
             if (this.grounded)
                 if (this.fist.grounded) {
                     this.setJob(JOB.attack);
-                    this.fist.grounded = false; 
+                    this.fist.grounded = false;
                     this.sprite.mtxLocal.translateX(unit / 2);
                     fc.Time.game.setTimer(1000, 1, this.strikeSetHitBox);
-                    fc.Time.game.setTimer(1500, 1, this.endstrike);
+                    fc.Time.game.setTimer(1300, 1, this.endstrike);
                     fc.Time.game.setTimer(2500, 1, this.endstrikeAnimation);
                 }
         }
         public endstrikeAnimation = (): void => {
             this.setJob(JOB.idle);
             this.fist.grounded = true;
-            this.sprite.mtxLocal.translateX(-unit / 2 );
+            this.sprite.mtxLocal.translateX(-unit / 2);
         }
 
 
@@ -165,10 +179,11 @@ namespace Endabgabe {
             sounds.playSound(Sounds.Shword);
             this.attackTime = true;
             //this.fist.mtxLocal.translateX(unit / 2);
-           
+
         }
 
         public endstrike = (): void => {
+            avatar.setVulnerable();
             this.attackTime = false;
             //this.fist.mtxLocal.translateX(-unit / 2);
         }
@@ -182,12 +197,13 @@ namespace Endabgabe {
             this.invulnerable = true;
             fc.Time.game.setTimer(500, 1, this.setVulnerable/* function (): void { this.invulnerable  } */);
             this.health -= _damage;
-            sounds.playSound(Sounds.Hit);
+            sounds.playSound(Sounds.EnemyHit);
 
             gameState.currentEnemyHealth -= avatarProperties.damage;
             Hud.hndHealthBar();
             if (this.health <= 0) {
-
+                fc.Time.game.setTimer(2200, 1, this.deleteEnemy);
+                this.setJob(JOB.die);
                 return true;
             }
             return false;
@@ -196,7 +212,9 @@ namespace Endabgabe {
         public setVulnerable = (): void => {
             this.invulnerable = false;
         }
-
+        public deleteEnemy = (): void => {
+            enemies.removeChild(this);
+        }
 
         private flip(_reverse: boolean): void {
             if (this.fist.grounded)

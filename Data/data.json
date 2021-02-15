@@ -1,6 +1,6 @@
 {
     "avatarProperties": {
-        "startLife": 10,
+        "startLife": 3,
         "damage": 1
     },
     "enemyProperties": {
