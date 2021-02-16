@@ -23,9 +23,8 @@ namespace Endabgabe {
         private cmpAudioJump: fc.ComponentAudio;
         private cmpAudioCollect: fc.ComponentAudio;
         private cmpEnemyHitAudio: fc.ComponentAudio;
-
         private cmpAudioLand: fc.ComponentAudio;
-        private backRound0n: boolean = false;
+     
 
         public constructor() {
 
@@ -84,10 +83,6 @@ namespace Endabgabe {
                     this.cmpShwordAudio.play(true);
                     break;
 
-                case Sounds.Step:
-                    this.cmpStepAudio.play(true);
-                    break;
-
                 case Sounds.Jump:
                     this.cmpAudioJump.play(true);
                     break;
@@ -103,7 +98,7 @@ namespace Endabgabe {
                 case Sounds.EnemyHit:
                     this.cmpEnemyHitAudio.play(true);
                     break;
-                    
+
                 default:
                     break;
             }
@@ -112,14 +107,25 @@ namespace Endabgabe {
         }
 
 
-        public hndBackroundSound(_play: boolean): void {
+        public hndBackroundSound(_OnOff: boolean): void {
 
-            if (_play != this.backRound0n) {
-                this.cmpAudioBackround.play(_play);
+            if (this.cmpAudioBackround.isPlaying && _OnOff == false) {
+                this.cmpAudioBackround.play(_OnOff);
+            } else if (this.cmpAudioBackround.isPlaying == false && _OnOff) {
+                this.cmpAudioBackround.play(_OnOff);
             }
 
-            this.backRound0n = _play;
+          
+        }
 
+        public stepSound(_OnOff: boolean): void {
+            if (this.cmpStepAudio.isPlaying && _OnOff == false) {
+                this.cmpStepAudio.play(_OnOff);
+            } else if (this.cmpStepAudio.isPlaying == false && _OnOff) {
+                this.cmpStepAudio.play(_OnOff);
+            }
+          
+         
         }
     }
 }

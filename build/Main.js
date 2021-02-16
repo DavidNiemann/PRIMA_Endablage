@@ -303,16 +303,19 @@ var Endabgabe;
                         //  this.cmpStepAudio.play(false);
                         this.sprite.setAnimation(Avatar.animations["Idle"]);
                         this.avatarStatus = AvatarStatus.idle;
+                        Endabgabe.sounds.stepSound(false);
                         break;
                     case AvatarStatus.walk:
                         //  this.cmpStepAudio.play(true);
                         this.sprite.setAnimation(Avatar.animations["Walk"]);
                         this.avatarStatus = AvatarStatus.walk;
+                        Endabgabe.sounds.stepSound(true);
                         break;
                     case AvatarStatus.jump:
                         //  this.cmpStepAudio.play(false);
                         this.sprite.setAnimation(Avatar.animations["jump"]);
                         this.avatarStatus = AvatarStatus.jump;
+                        Endabgabe.sounds.stepSound(false);
                         break;
                     default:
                         break;
@@ -430,7 +433,7 @@ var Endabgabe;
             this.animations[name] = sprite;
             name = "Strike";
             sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-            sprite.generateByGrid(fc.Rectangle.GET(3, 0, 40, 37), 17, 6, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(43));
+            sprite.generateByGrid(fc.Rectangle.GET(0, 0, 44, 37), 17, 6, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(43));
             this.animations[name] = sprite;
             name = "Die";
             sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
@@ -494,6 +497,7 @@ var Endabgabe;
                         break;
                     case JOB.die:
                         this.sprite.setAnimation(Enemy.animations["Die"]);
+                        this.invulnerable = true;
                         this.job = JOB.die;
                         break;
                     default:
@@ -513,7 +517,7 @@ var Endabgabe;
                 }
         }
         setHealth(_damage) {
-            if (this.invulnerable) {
+            if (this.invulnerable || this.job == JOB.die) {
                 return false;
             }
             this.invulnerable = true;
@@ -824,7 +828,6 @@ var Endabgabe;
     })(Sounds = Endabgabe.Sounds || (Endabgabe.Sounds = {}));
     class Sound {
         constructor() {
-            this.backRound0n = false;
             this.audioShword = new fc.Audio("../GameSounds/mixkit_fast_sword.wav");
             this.cmpShwordAudio = new fc.ComponentAudio(this.audioShword, false, false);
             this.cmpShwordAudio.connect(true);
@@ -866,9 +869,6 @@ var Endabgabe;
                 case Sounds.Shword:
                     this.cmpShwordAudio.play(true);
                     break;
-                case Sounds.Step:
-                    this.cmpStepAudio.play(true);
-                    break;
                 case Sounds.Jump:
                     this.cmpAudioJump.play(true);
                     break;
@@ -885,11 +885,21 @@ var Endabgabe;
                     break;
             }
         }
-        hndBackroundSound(_play) {
-            if (_play != this.backRound0n) {
-                this.cmpAudioBackround.play(_play);
+        hndBackroundSound(_OnOff) {
+            if (this.cmpAudioBackround.isPlaying && _OnOff == false) {
+                this.cmpAudioBackround.play(_OnOff);
             }
-            this.backRound0n = _play;
+            else if (this.cmpAudioBackround.isPlaying == false && _OnOff) {
+                this.cmpAudioBackround.play(_OnOff);
+            }
+        }
+        stepSound(_OnOff) {
+            if (this.cmpStepAudio.isPlaying && _OnOff == false) {
+                this.cmpStepAudio.play(_OnOff);
+            }
+            else if (this.cmpStepAudio.isPlaying == false && _OnOff) {
+                this.cmpStepAudio.play(_OnOff);
+            }
         }
     }
     Endabgabe.Sound = Sound;

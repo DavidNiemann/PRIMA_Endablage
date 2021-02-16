@@ -62,7 +62,7 @@ namespace Endabgabe {
 
             name = "Strike";
             sprite = new fcAid.SpriteSheetAnimation(name, _spritesheet);
-            sprite.generateByGrid(fc.Rectangle.GET(3, 0, 40, 37), 17, 6, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(43));
+            sprite.generateByGrid(fc.Rectangle.GET(0, 0, 44, 37), 17, 6, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(43));
             this.animations[name] = sprite;
 
             name = "Die";
@@ -148,6 +148,7 @@ namespace Endabgabe {
                         break;
                     case JOB.die:
                         this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Enemy.animations["Die"]);
+                        this.invulnerable = true;
                         this.job = JOB.die;
                         break;
                     default:
@@ -189,11 +190,10 @@ namespace Endabgabe {
         }
 
         public setHealth(_damage: number): boolean {
-
-            if (this.invulnerable) {
+            if (this.invulnerable || this.job == JOB.die) {
                 return false;
             }
-
+           
             this.invulnerable = true;
             fc.Time.game.setTimer(500, 1, this.setVulnerable/* function (): void { this.invulnerable  } */);
             this.health -= _damage;
@@ -204,6 +204,7 @@ namespace Endabgabe {
             if (this.health <= 0) {
                 fc.Time.game.setTimer(2200, 1, this.deleteEnemy);
                 this.setJob(JOB.die);
+
                 return true;
             }
             return false;

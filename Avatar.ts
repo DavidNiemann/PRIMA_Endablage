@@ -91,6 +91,8 @@ namespace Endabgabe {
                     this.velocity.x = this.control.getOutput();
                     this.hnddDirection(this.velocity);
 
+              
+
                 }
         }
 
@@ -220,16 +222,19 @@ namespace Endabgabe {
                         //  this.cmpStepAudio.play(false);
                         this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Avatar.animations["Idle"]);
                         this.avatarStatus = AvatarStatus.idle;
+                        sounds.stepSound(false);
                         break;
                     case AvatarStatus.walk:
                         //  this.cmpStepAudio.play(true);
                         this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Avatar.animations["Walk"]);
                         this.avatarStatus = AvatarStatus.walk;
+                        sounds.stepSound(true);
                         break;
                     case AvatarStatus.jump:
                         //  this.cmpStepAudio.play(false);
                         this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Avatar.animations["jump"]);
                         this.avatarStatus = AvatarStatus.jump;
+                        sounds.stepSound(false);
                         break;
                     default:
                         break;
