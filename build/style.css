@@ -51,11 +51,12 @@ canvas {
     display: flex;
     align-items: center;
     justify-content: center;
+    border: solid black;
 }
 
 #healthEnemy{
     position: absolute;
-    left: 0;
+    left: 3px;
     height: 20px;
     background-color: red;
     width:  calc( var(--livebarwidth)/3) ;
