@@ -31,9 +31,13 @@ namespace Endabgabe {
     export let enemyProperties: EnemyProperties;
 
     async function sceneLoad(_event?: Event): Promise<void> {
+
+        /**********************************/
+        // Das Dokument kann nicht mehr Makiert werden 
         var element: Document = document;
         element.onselectstart = function (): boolean { return false; } ;
         element.onmousedown = function (): boolean  { return false; }; 
+        /**********************************/
         sounds = new Sound();
         hndGameConditiones();
 
@@ -87,7 +91,7 @@ namespace Endabgabe {
         //canvas.addEventListener("click", canvas.requestPointerLock);
         //canvas.addEventListener("mousemove", avatar.hndMouse);
         document.addEventListener("click", function (): void {
-            if (document.activeElement.toString() == "[objnect HTMLButtonElement]") { (<HTMLButtonElement>document.activeElement).blur(); }
+            if (document.activeElement.toString() == "[objnect HTMLButtonElement]") { (<HTMLButtonElement>document.activeElement).blur(); } // Verhindert Das Der Butten Im Focus Bleibt so das Er Bie Trücken der Spacetaste Ausgelöst wird 
         });
 
         Hud.start();

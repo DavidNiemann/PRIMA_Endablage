@@ -570,9 +570,12 @@ var Endabgabe;
     let worldGenerator;
     let movableCamara = false;
     async function sceneLoad(_event) {
+        /**********************************/
+        // Das Dokument kann nicht mehr Makiert werden 
         var element = document;
         element.onselectstart = function () { return false; };
         element.onmousedown = function () { return false; };
+        /**********************************/
         Endabgabe.sounds = new Endabgabe.Sound();
         hndGameConditiones();
         const canvas = document.querySelector("canvas");
@@ -613,7 +616,7 @@ var Endabgabe;
         document.addEventListener("click", function () {
             if (document.activeElement.toString() == "[objnect HTMLButtonElement]") {
                 document.activeElement.blur();
-            }
+            } // Verhindert Das Der Butten Im Focus Bleibt so das Er Bie Trücken der Spacetaste Ausgelöst wird 
         });
         Endabgabe.Hud.start();
         Endabgabe.Hud.setHubhealth();
