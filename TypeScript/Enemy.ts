@@ -21,8 +21,7 @@ namespace Endabgabe {
         private invulnerable: boolean = false;
 
         private attackTime: boolean = false;
-        // private static readonly mtrSolidWhite: fc.Material = new fc.Material("SolidWhite", fc.ShaderUniColor, new fc.CoatColored(fc.Color.CSS("WHITE")));
-        // private cmpMaterial: fc.ComponentMaterial;
+
         public constructor(_name: string, _size: fc.Vector3, _position: fc.Vector3, _health: number, _damage: number) {
             super(_name, _size, _position);
             this.sprite = new fcAid.NodeSprite("sprite");
@@ -41,11 +40,9 @@ namespace Endabgabe {
             this.health = _health;
             this.damage = _damage;
 
-            // this.cmpMaterial = new fc.ComponentMaterial(Enemy.mtrSolidWhite);
-            //  this.addComponent(this.cmpMaterial);
-
-
         }
+        /*****************Start********************/
+        // Sprites werde Aus einem Bild generiert 
         public static generateSprites(_spritesheet: fc.CoatTextured): void {
             this.animations = {};
 
@@ -70,7 +67,9 @@ namespace Endabgabe {
             sprite.generateByGrid(fc.Rectangle.GET(33, 40, 30, 32), 16, 6, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(33));
             this.animations[name] = sprite;
         }
-
+        /*********************Ende***********************/
+        /********************Anfang*******************/
+        // Verhalten Des Gegners wird aktualisieren 
         public update(): void {
             if (this.health <= 0)
                 this.setJob(JOB.die);
@@ -114,8 +113,6 @@ namespace Endabgabe {
                     this.fist.rect.position.y = this.fist.mtxWorld.translation.y - this.fist.rect.size.y / 2;
                     if (this.fist.checkCollision(avatar, false)) {
 
-
-                        //enemies.removeChild(avatar);
                         avatar.newhealth(this.damage);
                     }
 
@@ -158,6 +155,9 @@ namespace Endabgabe {
             }
 
         }
+        /*****************Ende*****************/
+        /****************Anfang****************/
+        // Verhalten des Schlages des Gegneres
         public strike(): void {
             if (this.grounded)
                 if (this.fist.grounded) {
@@ -179,23 +179,27 @@ namespace Endabgabe {
         public strikeSetHitBox = (): void => {
             sounds.playSound(Sounds.Shword);
             this.attackTime = true;
-            //this.fist.mtxLocal.translateX(unit / 2);
+
 
         }
 
         public endstrike = (): void => {
             avatar.setVulnerable();
             this.attackTime = false;
-            //this.fist.mtxLocal.translateX(-unit / 2);
+
         }
+        /***************Ende****************/
+
+        /***************Anfang******************/
+        // Methoden Der Gegner Eigenschften beeinflussen 
 
         public setHealth(_damage: number): boolean {
             if (this.invulnerable || this.job == JOB.die) {
                 return false;
             }
-           
+
             this.invulnerable = true;
-            fc.Time.game.setTimer(500, 1, this.setVulnerable/* function (): void { this.invulnerable  } */);
+            fc.Time.game.setTimer(500, 1, this.setVulnerable);
             this.health -= _damage;
             sounds.playSound(Sounds.EnemyHit);
 
@@ -223,7 +227,7 @@ namespace Endabgabe {
         }
 
 
-
+        /********************Ende************************ */
 
 
     }

@@ -16,7 +16,7 @@ namespace Endabgabe {
              public worldhight: number; // = unit * 20; */
 
         private tempWall: GameObject;
-        private txtFloor: fc.TextureImage = new fc.TextureImage("../GameAssets/Ground.png");
+        //private txtFloor: fc.TextureImage = new fc.TextureImage("../GameAssets/Ground.png");
 
         constructor(_name: string) {
             this.name = _name;
@@ -28,9 +28,9 @@ namespace Endabgabe {
 
         public genarateWorld(_levelNumber: number, _position: fc.Vector3): fc.Node {
 
-            let mtrWall: fc.Material = new fc.Material("Wall", fc.ShaderTexture, new fc.CoatTextured(null, this.txtFloor));
+
             let levelRoot: fc.Node = new fc.Node("level" + _levelNumber);
-            levelRoot.addChild(new Floor("Ground", new fc.Vector3(worldLength, unit, unit), new fc.Vector3(0 + _position.x, -17 + _position.y, 0 + _position.z), mtrWall));
+            levelRoot.addChild(new Floor("Ground", new fc.Vector3(worldLength, unit, unit), new fc.Vector3(0 + _position.x, -17 + _position.y, 0 + _position.z)));
             this.tempWall = new GameObject("LeftWall", new fc.Vector3(unit, worldhight, unit), new fc.Vector3(-23 + _position.x, 0 + _position.y, 0 + _position.z));
             levelRoot.addChild(this.tempWall);
             levelRoot.addChild(new GameObject("RightWall", new fc.Vector3(unit, worldhight, unit), new fc.Vector3(23 + _position.x, 0 + _position.y, 0 + _position.z)));
@@ -44,7 +44,7 @@ namespace Endabgabe {
             for (let i: number = 0; i < fc.Random.default.getRange(0, 4); i++) {
                 xPos = fc.Random.default.getRange(xPos + jumpDistance, -(xPos + jumpDistance));
                 length = fc.Random.default.getRange(unit, worldLength / 2);
-                levelRoot.addChild(new Floor("Ground", new fc.Vector3(length, unit, unit), new fc.Vector3(xPos + _position.x, (3 - (unit - unit / 4) * i) * -unit * 2 + _position.y, 0 + _position.z), mtrWall));
+                levelRoot.addChild(new Floor("Ground", new fc.Vector3(length, unit, unit), new fc.Vector3(xPos + _position.x, (3 - (unit - unit / 4) * i) * -unit * 2 + _position.y, 0 + _position.z)));
 
             }
 

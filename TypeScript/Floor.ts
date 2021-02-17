@@ -1,12 +1,13 @@
 namespace Endabgabe {
     import fc = FudgeCore;
-    // import fcaid = FudgeAid;
 
     export class Floor extends GameObject {
-        public constructor(_name: string, _size: fc.Vector3, _position: fc.Vector3, _material: ƒ.Material ) { 
+        private static txtFloor: fc.TextureImage = new fc.TextureImage("../GameAssets/Ground.png");
+        
+        public constructor(_name: string, _size: fc.Vector3, _position: fc.Vector3) { 
             super(_name, _size, _position);
-
-            let cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(_material);
+            let mtrWall: fc.Material = new fc.Material("Wall", fc.ShaderTexture, new fc.CoatTextured(null, Floor.txtFloor));
+            let cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(mtrWall);
             cmpMaterial.pivot.scaleX(_size.x / unit);
             cmpMaterial.pivot.scaleY(_size.y / unit);
             this.addComponent(cmpMaterial);

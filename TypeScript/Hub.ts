@@ -21,13 +21,15 @@ namespace Endabgabe {
             Hud.controller = new fcui.Controller(gameState, gameHud);
             Hud.controller.updateUserInterface();
 
- 
+
         }
-       
+        /****************Anfang********************/
+        //Lebensbalgen für die Gegner wereden Erstellt 
         public static hndHealthBar(): void {
             let currentHealth: HTMLDivElement = (<HTMLDivElement>document.getElementById("healthEnemy"));
             currentHealth.style.width = 160 * gameState.currentEnemyHealth / gameState.enemyHealth + "px";
         }
+
         public static setHubhealth(): void {
             let health: number = 0;
             for (let enemy of enemies.getChildren() as Enemy[]) {
@@ -40,7 +42,7 @@ namespace Endabgabe {
             gameState.currentEnemyHealth = health;
             Hud.hndHealthBar();
         }
-
+        /****************Ende*********************/
     }
 
 

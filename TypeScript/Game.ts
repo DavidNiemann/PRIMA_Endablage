@@ -30,55 +30,51 @@ namespace Endabgabe {
     export let avatarProperties: AvatarProperties;
     export let enemyProperties: EnemyProperties;
 
+    /*****************Anfang********************/
+    // Die Spiel wichtigen Daten werden zum Begin geladen 
+    
     async function sceneLoad(_event?: Event): Promise<void> {
 
-        /**********************************/
+        await loaddata("../Data/data.json");
+        await createEnemyAssets();
+        await createAvatarAssets();
+
+        /*****************Anfang********************/
         // Das Dokument kann nicht mehr Makiert werden 
+
         var element: Document = document;
-        element.onselectstart = function (): boolean { return false; } ;
-        element.onmousedown = function (): boolean  { return false; }; 
-        /**********************************/
-        sounds = new Sound();
-        hndGameConditiones();
+        element.onselectstart = function (): boolean { return false; };
+        element.onmousedown = function (): boolean { return false; };
+        /****************Ende******************/
 
         const canvas: HTMLCanvasElement = document.querySelector("canvas");
-        gameCondition = GamesConditions.STARTGAME;
 
-        await loaddata("../Data/data.json");
-
-        gameState.health = avatarProperties.startLife;
-
+        sounds = new Sound();
         root = new fc.Node("root");
         items = new fc.Node("items");
-
         camaraNode = new fc.Node("camara");
-        camaraNode.addComponent(new fc.ComponentTransform());
-        root.addChild(camaraNode);
         gameWorld = new fc.Node("GameWorld");
+        avatar = new Avatar("Avatar", new fc.Vector3(2 * unit, 2 * unit, 1), fc.Vector3.ZERO());
+        enemies = new fc.Node("Enemies");
+        worldGenerator = new WorldGenarator("world");
 
+        root.addChild(camaraNode);
         root.addChild(gameWorld);
         root.addChild(items);
-        worldGenerator = new WorldGenarator("world");
-        genarateWorld(worldNumber);
-
+        root.addChild(avatar);
+        root.addChild(enemies);
         root.addChild(new Background("Background", new fc.Vector3(worldLength, worldhight, unit), fc.Vector3.X(0)));
 
-        await createAvatarAssets();
-        avatar = new Avatar("Avatar", new fc.Vector3(2 * unit, 2 * unit, 1), fc.Vector3.ZERO());
+        gameCondition = GamesConditions.STARTGAME;
+        gameState.health = avatarProperties.startLife;
 
-        root.addChild(avatar);
-
-        enemies = new fc.Node("Enemies");
-        await createEnemyAssets();
-
-        root.addChild(enemies);
+        gameWorld.addChild(worldGenerator.genarateWorld(worldNumber, fc.Vector3.X(worldNumber)));
+        hndGameConditiones();
 
         enemies.addChild(worldGenerator.createEnemie(worldNumber));
         (<Enemy>enemies.getChild(0)).activ = true;
 
-        /* 
-                test = new HealthUp("HealthUp", fc.Vector3.ONE(unit), fc.Vector3.ZERO());
-                gameWorld.addChild(test); */
+        camaraNode.addComponent(new fc.ComponentTransform());
 
         let cmpCamera: fc.ComponentCamera = new fc.ComponentCamera();
         cmpCamera.pivot.translateZ(worldLength);
@@ -88,25 +84,30 @@ namespace Endabgabe {
         document.addEventListener("keypress", avatar.hndJump);
         document.addEventListener("keypress", avatar.hadKeyboard);
         document.addEventListener("click", avatar.strike);
-        //canvas.addEventListener("click", canvas.requestPointerLock);
-        //canvas.addEventListener("mousemove", avatar.hndMouse);
         document.addEventListener("click", function (): void {
             if (document.activeElement.toString() == "[objnect HTMLButtonElement]") { (<HTMLButtonElement>document.activeElement).blur(); } // Verhindert Das Der Butten Im Focus Bleibt so das Er Bie Trücken der Spacetaste Ausgelöst wird 
         });
+
+        //canvas.addEventListener("click", canvas.requestPointerLock);
+        //canvas.addEventListener("mousemove", avatar.hndMouse);
+
 
         Hud.start();
         Hud.setHubhealth();
 
         viewport = new fc.Viewport();
         viewport.initialize("Viewport", root, cmpCamera, canvas);
-        fc.Debug.log(viewport);
         viewport.camera.backgroundColor = fc.Color.CSS("Blue");
+
         fc.Loop.addEventListener(fc.EVENT.LOOP_FRAME, hndLoop);
         fc.Loop.start(fc.LOOP_MODE.TIME_GAME, 60);
+
         viewport.draw();
 
     }
 
+    /*****************Anfang********************/
+    // aktualisieren des Spieles 
 
     function hndLoop(_event: Event): void {
         /*  test.update(); */
@@ -130,7 +131,6 @@ namespace Endabgabe {
             }
 
 
-            // worldGenerator.updateWorld(worldNumber);
             avatar.update();
 
             for (let enemy of enemies.getChildren() as MoveObject[]) {
@@ -151,11 +151,10 @@ namespace Endabgabe {
 
         }
     }
+    /******************Ende******************/
 
-
-    function genarateWorld(_worldNumber: number): void {
-        gameWorld.addChild(worldGenerator.genarateWorld(_worldNumber, fc.Vector3.X(_worldNumber)));
-    }
+    /******************Start****************/
+    // Laden der Externen Daten und Bildern 
 
     async function createAvatarAssets(): Promise<void> {
         let txtAvatar: fc.TextureImage = new fc.TextureImage();
@@ -169,7 +168,6 @@ namespace Endabgabe {
         await txtEnemy.load("../GameAssets/Skeleton.png");
         let coatSprite: fc.CoatTextured = new fc.CoatTextured(null, txtEnemy);
         Enemy.generateSprites(coatSprite);
-
     }
 
     async function loaddata(_url: string): Promise<void> {
@@ -185,9 +183,12 @@ namespace Endabgabe {
         worldLength = _world.worldLength;
         worldhight = _world.worldhight;
     }
+    /******************Ende****************/
 
 
-
+    /*****************Anfang***************/
+    // Butten für das Menü um das Spiel zu pausieren/Starten und Neu Starten 
+    // GameOver state 
 
     export function hndGameConditiones(): void {
         let buttenDiv: HTMLDivElement = (<HTMLDivElement>document.getElementById("gameButtenDiv"));
@@ -248,9 +249,8 @@ namespace Endabgabe {
                     break;
             }
         }
-
-
     }
+
     export function hndGameOver(): void {
         gameCondition = GamesConditions.GAMEOVER;
         let butten: HTMLButtonElement = (<HTMLButtonElement>document.getElementById("PSButten"));
@@ -258,10 +258,8 @@ namespace Endabgabe {
         let textDiv: HTMLDivElement = (<HTMLDivElement>document.getElementById("GameOverText"));
         let gameOverText: HTMLParagraphElement = document.createElement("p");
         gameOverText.id = "gameover";
-        gameOverText.innerHTML = "Game Over"; 
+        gameOverText.innerHTML = "Game Over";
         textDiv.appendChild(gameOverText);
     }
-
-
-
+    /***************Ende***************/
 }

@@ -1,6 +1,5 @@
 namespace Endabgabe {
     import fc = FudgeCore;
-    // import fcaid = FudgeAid;
 
     export class Background extends fc.Node {
         private static txtBackground: fc.TextureImage = new fc.TextureImage("../GameAssets/Background.png");

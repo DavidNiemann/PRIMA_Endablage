@@ -5,10 +5,7 @@ namespace Endabgabe {
     export class GameObject extends fc.Node { 
 
         protected static readonly meshQuad: fc.MeshQuad = new fc.MeshQuad();
-       // private static readonly mtrSolidWhite: fc.Material = new fc.Material("SolidWhite", fc.ShaderUniColor, new fc.CoatColored(fc.Color.CSS("WHITE")));
         public rect: fc.Rectangle;
-      //  private cmpMaterial: fc.ComponentMaterial;
-
 
         public constructor(_name: string, _size: fc.Vector3, _position: fc.Vector3) { 
             super(_name);
@@ -17,8 +14,6 @@ namespace Endabgabe {
             let cmpQuad: fc.ComponentMesh = new fc.ComponentMesh(GameObject.meshQuad);
             this.addComponent(cmpQuad);
             cmpQuad.pivot.scale(_size);
-            //this.cmpMaterial = new fc.ComponentMaterial(GameObject.mtrSolidWhite);
-           // this.addComponent(this.cmpMaterial);
 
 
              

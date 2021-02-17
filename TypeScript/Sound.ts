@@ -71,7 +71,7 @@ namespace Endabgabe {
 
         }
 
-
+        /*Sound die einmalig abgespeilt werden*/
         public playSound(_sound: Sounds): void {
             switch (_sound) {
 
@@ -106,7 +106,8 @@ namespace Endabgabe {
 
         }
 
-
+        /**********Anfang************/
+        // Sounds die in schleife laufen und Gestartet und Beedetwerden können 
         public hndBackroundSound(_OnOff: boolean): void {
 
             if (this.cmpAudioBackround.isPlaying && _OnOff == false) {
@@ -127,5 +128,6 @@ namespace Endabgabe {
           
          
         }
+        /************Ende***************/
     }
 }

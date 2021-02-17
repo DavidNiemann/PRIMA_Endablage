@@ -5,7 +5,6 @@ var Endabgabe;
     // import fcaid = FudgeAid;
     let GameObject = /** @class */ (() => {
         class GameObject extends fc.Node {
-            //  private cmpMaterial: fc.ComponentMaterial;
             constructor(_name, _size, _position) {
                 super(_name);
                 this.rect = new fc.Rectangle(_position.x, _position.y, _size.x, _size.y, fc.ORIGIN2D.CENTER);
@@ -13,8 +12,6 @@ var Endabgabe;
                 let cmpQuad = new fc.ComponentMesh(GameObject.meshQuad);
                 this.addComponent(cmpQuad);
                 cmpQuad.pivot.scale(_size);
-                //this.cmpMaterial = new fc.ComponentMaterial(GameObject.mtrSolidWhite);
-                // this.addComponent(this.cmpMaterial);
             }
         }
         GameObject.meshQuad = new fc.MeshQuad();
@@ -25,22 +22,18 @@ var Endabgabe;
 var Endabgabe;
 (function (Endabgabe) {
     var fc = FudgeCore;
-    // import fcaid = FudgeAid;
     class MoveObject extends Endabgabe.GameObject {
-        /*   private cmpMaterial: fc.ComponentMaterial; */
         constructor(_name, _size, _position) {
             super(_name, _size, _position);
-            /*    private static readonly mtrSolidWhite: fc.Material = new fc.Material("SolidWhite", fc.ShaderUniColor, new fc.CoatColored(fc.Color.CSS("WHITE"))); */
             this.velocity = fc.Vector3.ZERO();
             this.grounded = false;
             this.acceleration = 0.9;
             this.velocity = fc.Vector3.ZERO();
-            /*  this.cmpMaterial = new fc.ComponentMaterial(MoveObject.mtrSolidWhite);
-             this.addComponent(this.cmpMaterial); */
         }
+        /**********Anfang*************/
+        // Bewegt die Elemente mit abhänig von der FrameRate
         move() {
             let frameTime = fc.Loop.timeFrameGame / 1000;
-            // this.velocity.normalize(this.speed);
             let distance = fc.Vector3.SCALE(this.velocity, frameTime);
             this.translate(distance);
         }
@@ -49,6 +42,8 @@ var Endabgabe;
             this.rect.position.x = this.mtxLocal.translation.x - this.rect.size.x / 2;
             this.rect.position.y = this.mtxLocal.translation.y - this.rect.size.y / 2;
         }
+        /***********Ende**************/
+        /************Anfang***************/
         checkCollision(_target, _world) {
             let intersection = this.rect.getIntersection(_target.rect);
             if (!intersection) {
@@ -61,12 +56,11 @@ var Endabgabe;
                 }
             return _target;
         }
-        /* public setPause(): void {
-            this.cmpStepAudio.play(false);
-        } */
+        /***********Anfang**************/
+        // Verarbeitet die Colloesion mit einer Wand und Boden
         hndYCollision(_target) {
             if (this.mtxLocal.translation.y > _target.mtxLocal.translation.y) {
-                if ( /* !this.grounded) { */this.mtxLocal.translation.y != _target.mtxLocal.translation.y + 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.y + _target.getComponent(fc.ComponentMesh).pivot.scaling.y)) {
+                if (this.mtxLocal.translation.y != _target.mtxLocal.translation.y + 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.y + _target.getComponent(fc.ComponentMesh).pivot.scaling.y)) {
                     this.grounded = true;
                     Endabgabe.sounds.playSound(Endabgabe.Sounds.Land);
                     this.velocity.y = 0;
@@ -76,14 +70,6 @@ var Endabgabe;
             else {
                 this.grounded = false;
             }
-            /*  else {
-                 if (this.mtxLocal.translation.y != _target.mtxLocal.translation.y - 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.y + _target.getComponent(fc.ComponentMesh).pivot.scaling.y)) {
-                     this.velocity.y = 0;
-                     this.mtxLocal.translation = new fc.Vector3(this.mtxLocal.translation.x, _target.mtxLocal.translation.y - 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.y + _target.getComponent(fc.ComponentMesh).pivot.scaling.y), 0);
-                     //}
-                 }
- 
-             } */
         }
         hndXCollision(_target) {
             if (_target.name.includes("Wall") == false)
@@ -100,23 +86,6 @@ var Endabgabe;
                 }
             }
         }
-        update() {
-            if (!this.grounded) {
-                this.velocity.y -= this.acceleration;
-            }
-            let hitTargets = [];
-            for (let level of Endabgabe.gameWorld.getChildren()) {
-                for (let ground of level.getChildren()) {
-                    let target = this.checkCollision(ground);
-                    if (target) {
-                        hitTargets.push(target);
-                    }
-                }
-            }
-            //   hitTargets = this.removeWall(hitTargets);
-            this.chooseTarget(hitTargets);
-            this.move();
-        }
         chooseTarget(_targets) {
             let target = _targets[0];
             if (!target) {
@@ -130,6 +99,25 @@ var Endabgabe;
                     }
                 }
             this.hndYCollision(target);
+        }
+        /************Ende***********/
+        /**************Anfang*************/
+        // Verhalten Des MoveObjectes
+        update() {
+            if (!this.grounded) {
+                this.velocity.y -= this.acceleration;
+            }
+            let hitTargets = [];
+            for (let level of Endabgabe.gameWorld.getChildren()) {
+                for (let ground of level.getChildren()) {
+                    let target = this.checkCollision(ground);
+                    if (target) {
+                        hitTargets.push(target);
+                    }
+                }
+            }
+            this.chooseTarget(hitTargets);
+            this.move();
         }
     }
     Endabgabe.MoveObject = MoveObject;
@@ -155,10 +143,12 @@ var Endabgabe;
             this.control = new fc.Control("AvatarControl", 10, 0 /* PROPORTIONAL */);
             this.avatarStatus = AvatarStatus.idle;
             this.invulnerable = false;
+            /*********************Ende***********************/
+            /*******************Anfang***********************/
+            // Steuerungs Methoden die über Events AUfgerufen Werden 
             this.hadKeyboard = () => {
                 if (this.fist.grounded)
                     if (fc.Keyboard.isPressedOne([fc.KEYBOARD_CODE.A, fc.KEYBOARD_CODE.ARROW_LEFT, fc.KEYBOARD_CODE.D, fc.KEYBOARD_CODE.ARROW_RIGHT])) {
-                        // this.setAnimation(AvatarStatus.walk);
                         this.control.setInput(fc.Keyboard.mapToValue(-1, 0, [fc.KEYBOARD_CODE.A, fc.KEYBOARD_CODE.ARROW_LEFT])
                             + fc.Keyboard.mapToValue(1, 0, [fc.KEYBOARD_CODE.D, fc.KEYBOARD_CODE.ARROW_RIGHT]));
                         this.velocity.x = this.control.getOutput();
@@ -212,22 +202,13 @@ var Endabgabe;
             this.sprite.mtxLocal.translateZ(0.1);
             this.sprite.setAnimation(Avatar.animations["Idle"]);
             this.addChild(this.sprite);
-            this.fist = new Endabgabe.MoveObject("fist", new fc.Vector3(_size.x, _size.y, _size.z), new fc.Vector3( /* _position.x, _position.y, _position.z */));
+            this.fist = new Endabgabe.MoveObject("fist", new fc.Vector3(_size.x, _size.y, _size.z), new fc.Vector3(_position.x, _position.y, _position.z));
             this.fist.grounded = true;
             this.fist.mtxLocal.translateY(_size.y / 2);
             this.sprite.addChild(this.fist);
-            //this.removeComponent(this.getComponents(fc.ComponentMaterial)[0]);
-            //this.fist.removeComponent(this.fist.getComponents(fc.ComponentMaterial)[0]);
-            /*  this.audioShword = new fc.Audio("../GameSounds/mixkit_fast_sword.wav");
-             this.cmpShwordAudio = new fc.ComponentAudio(this.audioShword, false, false);
-             this.cmpShwordAudio.connect(true);
-             this.cmpShwordAudio.volume = 1;
- 
-             this.audioHit = new fc.Audio("../GameSounds/mixkit_Hit.mp3");
-             this.cmpHitAudio = new fc.ComponentAudio(this.audioHit, false, false);
-             this.cmpHitAudio.connect(true);
-             this.cmpHitAudio.volume = 1; */
         }
+        /*****************Start********************/
+        // Sprites werde Aus einem Bild generiert 
         static generateSprites(_spritesheet) {
             this.animations = {};
             let name = "Walk";
@@ -247,6 +228,9 @@ var Endabgabe;
             sprite.generateByGrid(fc.Rectangle.GET(30, 1071, 33, 33), 7, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(47));
             this.animations[name] = sprite;
         }
+        /***************Ende****************/
+        /***********Anfang*************/
+        //Verhalten des Avatars wird aktualisieren 
         update() {
             if (!fc.Keyboard.isPressedOne([fc.KEYBOARD_CODE.A, fc.KEYBOARD_CODE.ARROW_LEFT, fc.KEYBOARD_CODE.D, fc.KEYBOARD_CODE.ARROW_RIGHT])) {
                 this.velocity.x = 0;
@@ -256,11 +240,8 @@ var Endabgabe;
             this.fist.rect.position.y = this.fist.mtxWorld.translation.y - this.fist.rect.size.y / 2;
             if (this.fist.grounded == false) {
                 for (let enemy of Endabgabe.enemies.getChildren()) {
-                    //console.log(this.fist.rect, enemy.rect , this.rect);
                     if (this.fist.checkCollision(enemy, false)) {
-                        // enemies.removeChild(enemy);
                         if (enemy.setHealth(Endabgabe.avatarProperties.damage)) {
-                            //enemies.removeChild(enemy);
                             Endabgabe.gameState.score += 1;
                         }
                     }
@@ -277,6 +258,9 @@ var Endabgabe;
             }
             this.hndItems();
         }
+        /***************Ende****************/
+        /***************Anfang******************/
+        // Methoden die Avatar Eigenschften beeinflussen 
         newhealth(_damage) {
             if (this.invulnerable == false) {
                 Endabgabe.gameState.health -= _damage;
@@ -300,19 +284,16 @@ var Endabgabe;
                         this.avatarStatus = AvatarStatus.strike;
                         break;
                     case AvatarStatus.idle:
-                        //  this.cmpStepAudio.play(false);
                         this.sprite.setAnimation(Avatar.animations["Idle"]);
                         this.avatarStatus = AvatarStatus.idle;
                         Endabgabe.sounds.stepSound(false);
                         break;
                     case AvatarStatus.walk:
-                        //  this.cmpStepAudio.play(true);
                         this.sprite.setAnimation(Avatar.animations["Walk"]);
                         this.avatarStatus = AvatarStatus.walk;
                         Endabgabe.sounds.stepSound(true);
                         break;
                     case AvatarStatus.jump:
-                        //  this.cmpStepAudio.play(false);
                         this.sprite.setAnimation(Avatar.animations["jump"]);
                         this.avatarStatus = AvatarStatus.jump;
                         Endabgabe.sounds.stepSound(false);
@@ -339,11 +320,11 @@ var Endabgabe;
         }
     }
     Endabgabe.Avatar = Avatar;
+    /***************Ende****************/
 })(Endabgabe || (Endabgabe = {}));
 var Endabgabe;
 (function (Endabgabe) {
     var fc = FudgeCore;
-    // import fcaid = FudgeAid;
     let Background = /** @class */ (() => {
         class Background extends fc.Node {
             constructor(_name, _size, _position) {
@@ -375,8 +356,6 @@ var Endabgabe;
         JOB[JOB["die"] = 3] = "die";
     })(JOB = Endabgabe.JOB || (Endabgabe.JOB = {}));
     class Enemy extends Endabgabe.MoveObject {
-        // private static readonly mtrSolidWhite: fc.Material = new fc.Material("SolidWhite", fc.ShaderUniColor, new fc.CoatColored(fc.Color.CSS("WHITE")));
-        // private cmpMaterial: fc.ComponentMaterial;
         constructor(_name, _size, _position, _health, _damage) {
             super(_name, _size, _position);
             this.activ = false;
@@ -391,12 +370,10 @@ var Endabgabe;
             this.strikeSetHitBox = () => {
                 Endabgabe.sounds.playSound(Endabgabe.Sounds.Shword);
                 this.attackTime = true;
-                //this.fist.mtxLocal.translateX(unit / 2);
             };
             this.endstrike = () => {
                 Endabgabe.avatar.setVulnerable();
                 this.attackTime = false;
-                //this.fist.mtxLocal.translateX(-unit / 2);
             };
             this.setVulnerable = () => {
                 this.invulnerable = false;
@@ -418,9 +395,9 @@ var Endabgabe;
             this.sprite.setAnimation(Enemy.animations["Idle"]);
             this.health = _health;
             this.damage = _damage;
-            // this.cmpMaterial = new fc.ComponentMaterial(Enemy.mtrSolidWhite);
-            //  this.addComponent(this.cmpMaterial);
         }
+        /*****************Start********************/
+        // Sprites werde Aus einem Bild generiert 
         static generateSprites(_spritesheet) {
             this.animations = {};
             let name = "Walk";
@@ -440,6 +417,9 @@ var Endabgabe;
             sprite.generateByGrid(fc.Rectangle.GET(33, 40, 30, 32), 16, 6, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(33));
             this.animations[name] = sprite;
         }
+        /*********************Ende***********************/
+        /********************Anfang*******************/
+        // Verhalten Des Gegners wird aktualisieren 
         update() {
             if (this.health <= 0)
                 this.setJob(JOB.die);
@@ -473,7 +453,6 @@ var Endabgabe;
                     this.fist.rect.position.x = this.fist.mtxWorld.translation.x - this.fist.rect.size.x / 2;
                     this.fist.rect.position.y = this.fist.mtxWorld.translation.y - this.fist.rect.size.y / 2;
                     if (this.fist.checkCollision(Endabgabe.avatar, false)) {
-                        //enemies.removeChild(avatar);
                         Endabgabe.avatar.newhealth(this.damage);
                     }
                 }
@@ -505,6 +484,9 @@ var Endabgabe;
                 }
             }
         }
+        /*****************Ende*****************/
+        /****************Anfang****************/
+        // Verhalten des Schlages des Gegneres
         strike() {
             if (this.grounded)
                 if (this.fist.grounded) {
@@ -516,12 +498,15 @@ var Endabgabe;
                     fc.Time.game.setTimer(2500, 1, this.endstrikeAnimation);
                 }
         }
+        /***************Ende****************/
+        /***************Anfang******************/
+        // Methoden Der Gegner Eigenschften beeinflussen 
         setHealth(_damage) {
             if (this.invulnerable || this.job == JOB.die) {
                 return false;
             }
             this.invulnerable = true;
-            fc.Time.game.setTimer(500, 1, this.setVulnerable /* function (): void { this.invulnerable  } */);
+            fc.Time.game.setTimer(500, 1, this.setVulnerable);
             this.health -= _damage;
             Endabgabe.sounds.playSound(Endabgabe.Sounds.EnemyHit);
             Endabgabe.gameState.currentEnemyHealth -= Endabgabe.avatarProperties.damage;
@@ -542,16 +527,21 @@ var Endabgabe;
 })(Endabgabe || (Endabgabe = {}));
 var Endabgabe;
 (function (Endabgabe) {
-    // import fcaid = FudgeAid;
-    class Floor extends Endabgabe.GameObject {
-        constructor(_name, _size, _position, _material) {
-            super(_name, _size, _position);
-            let cmpMaterial = new ƒ.ComponentMaterial(_material);
-            cmpMaterial.pivot.scaleX(_size.x / Endabgabe.unit);
-            cmpMaterial.pivot.scaleY(_size.y / Endabgabe.unit);
-            this.addComponent(cmpMaterial);
+    var fc = FudgeCore;
+    let Floor = /** @class */ (() => {
+        class Floor extends Endabgabe.GameObject {
+            constructor(_name, _size, _position) {
+                super(_name, _size, _position);
+                let mtrWall = new fc.Material("Wall", fc.ShaderTexture, new fc.CoatTextured(null, Floor.txtFloor));
+                let cmpMaterial = new ƒ.ComponentMaterial(mtrWall);
+                cmpMaterial.pivot.scaleX(_size.x / Endabgabe.unit);
+                cmpMaterial.pivot.scaleY(_size.y / Endabgabe.unit);
+                this.addComponent(cmpMaterial);
+            }
         }
-    }
+        Floor.txtFloor = new fc.TextureImage("../GameAssets/Ground.png");
+        return Floor;
+    })();
     Endabgabe.Floor = Floor;
 })(Endabgabe || (Endabgabe = {}));
 var Endabgabe;
@@ -569,41 +559,40 @@ var Endabgabe;
     let camaraNode;
     let worldGenerator;
     let movableCamara = false;
+    /*****************Anfang********************/
+    // Die Spiel wichtigen Daten werden zum Begin geladen 
     async function sceneLoad(_event) {
-        /**********************************/
+        await loaddata("../Data/data.json");
+        await createEnemyAssets();
+        await createAvatarAssets();
+        /*****************Anfang********************/
         // Das Dokument kann nicht mehr Makiert werden 
         var element = document;
         element.onselectstart = function () { return false; };
         element.onmousedown = function () { return false; };
-        /**********************************/
-        Endabgabe.sounds = new Endabgabe.Sound();
-        hndGameConditiones();
+        /****************Ende******************/
         const canvas = document.querySelector("canvas");
-        Endabgabe.gameCondition = GamesConditions.STARTGAME;
-        await loaddata("../Data/data.json");
-        Endabgabe.gameState.health = Endabgabe.avatarProperties.startLife;
+        Endabgabe.sounds = new Endabgabe.Sound();
         Endabgabe.root = new fc.Node("root");
         Endabgabe.items = new fc.Node("items");
         camaraNode = new fc.Node("camara");
-        camaraNode.addComponent(new fc.ComponentTransform());
-        Endabgabe.root.addChild(camaraNode);
         Endabgabe.gameWorld = new fc.Node("GameWorld");
+        Endabgabe.avatar = new Endabgabe.Avatar("Avatar", new fc.Vector3(2 * Endabgabe.unit, 2 * Endabgabe.unit, 1), fc.Vector3.ZERO());
+        Endabgabe.enemies = new fc.Node("Enemies");
+        worldGenerator = new Endabgabe.WorldGenarator("world");
+        Endabgabe.root.addChild(camaraNode);
         Endabgabe.root.addChild(Endabgabe.gameWorld);
         Endabgabe.root.addChild(Endabgabe.items);
-        worldGenerator = new Endabgabe.WorldGenarator("world");
-        genarateWorld(Endabgabe.worldNumber);
-        Endabgabe.root.addChild(new Endabgabe.Background("Background", new fc.Vector3(Endabgabe.worldLength, Endabgabe.worldhight, Endabgabe.unit), fc.Vector3.X(0)));
-        await createAvatarAssets();
-        Endabgabe.avatar = new Endabgabe.Avatar("Avatar", new fc.Vector3(2 * Endabgabe.unit, 2 * Endabgabe.unit, 1), fc.Vector3.ZERO());
         Endabgabe.root.addChild(Endabgabe.avatar);
-        Endabgabe.enemies = new fc.Node("Enemies");
-        await createEnemyAssets();
         Endabgabe.root.addChild(Endabgabe.enemies);
+        Endabgabe.root.addChild(new Endabgabe.Background("Background", new fc.Vector3(Endabgabe.worldLength, Endabgabe.worldhight, Endabgabe.unit), fc.Vector3.X(0)));
+        Endabgabe.gameCondition = GamesConditions.STARTGAME;
+        Endabgabe.gameState.health = Endabgabe.avatarProperties.startLife;
+        Endabgabe.gameWorld.addChild(worldGenerator.genarateWorld(Endabgabe.worldNumber, fc.Vector3.X(Endabgabe.worldNumber)));
+        hndGameConditiones();
         Endabgabe.enemies.addChild(worldGenerator.createEnemie(Endabgabe.worldNumber));
         Endabgabe.enemies.getChild(0).activ = true;
-        /*
-                test = new HealthUp("HealthUp", fc.Vector3.ONE(unit), fc.Vector3.ZERO());
-                gameWorld.addChild(test); */
+        camaraNode.addComponent(new fc.ComponentTransform());
         let cmpCamera = new fc.ComponentCamera();
         cmpCamera.pivot.translateZ(Endabgabe.worldLength);
         cmpCamera.pivot.rotateY(180);
@@ -611,23 +600,24 @@ var Endabgabe;
         document.addEventListener("keypress", Endabgabe.avatar.hndJump);
         document.addEventListener("keypress", Endabgabe.avatar.hadKeyboard);
         document.addEventListener("click", Endabgabe.avatar.strike);
-        //canvas.addEventListener("click", canvas.requestPointerLock);
-        //canvas.addEventListener("mousemove", avatar.hndMouse);
         document.addEventListener("click", function () {
             if (document.activeElement.toString() == "[objnect HTMLButtonElement]") {
                 document.activeElement.blur();
             } // Verhindert Das Der Butten Im Focus Bleibt so das Er Bie Trücken der Spacetaste Ausgelöst wird 
         });
+        //canvas.addEventListener("click", canvas.requestPointerLock);
+        //canvas.addEventListener("mousemove", avatar.hndMouse);
         Endabgabe.Hud.start();
         Endabgabe.Hud.setHubhealth();
         Endabgabe.viewport = new fc.Viewport();
         Endabgabe.viewport.initialize("Viewport", Endabgabe.root, cmpCamera, canvas);
-        fc.Debug.log(Endabgabe.viewport);
         Endabgabe.viewport.camera.backgroundColor = fc.Color.CSS("Blue");
         fc.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, hndLoop);
         fc.Loop.start(fc.LOOP_MODE.TIME_GAME, 60);
         Endabgabe.viewport.draw();
     }
+    /*****************Anfang********************/
+    // aktualisieren des Spieles 
     function hndLoop(_event) {
         /*  test.update(); */
         if (Endabgabe.gameCondition == GamesConditions.PLAY) {
@@ -646,7 +636,6 @@ var Endabgabe;
                     worldGenerator.deleteoldWorld(Endabgabe.worldNumber);
                 }
             }
-            // worldGenerator.updateWorld(worldNumber);
             Endabgabe.avatar.update();
             for (let enemy of Endabgabe.enemies.getChildren()) {
                 enemy.update();
@@ -663,9 +652,9 @@ var Endabgabe;
              } */
         }
     }
-    function genarateWorld(_worldNumber) {
-        Endabgabe.gameWorld.addChild(worldGenerator.genarateWorld(_worldNumber, fc.Vector3.X(_worldNumber)));
-    }
+    /******************Ende******************/
+    /******************Start****************/
+    // Laden der Externen Daten und Bildern 
     async function createAvatarAssets() {
         let txtAvatar = new fc.TextureImage();
         await txtAvatar.load("../GameAssets/AvatarAssets.png");
@@ -690,6 +679,10 @@ var Endabgabe;
         Endabgabe.worldLength = _world.worldLength;
         Endabgabe.worldhight = _world.worldhight;
     }
+    /******************Ende****************/
+    /*****************Anfang***************/
+    // Butten für das Menü um das Spiel zu pausieren/Starten und Neu Starten 
+    // GameOver state 
     function hndGameConditiones() {
         let buttenDiv = document.getElementById("gameButtenDiv");
         let restartButten = document.createElement("button");
@@ -752,6 +745,7 @@ var Endabgabe;
         textDiv.appendChild(gameOverText);
     }
     Endabgabe.hndGameOver = hndGameOver;
+    /***************Ende***************/
 })(Endabgabe || (Endabgabe = {}));
 var Endabgabe;
 (function (Endabgabe) {
@@ -766,6 +760,7 @@ var Endabgabe;
                 cmpMaterial.pivot.scaleY(_size.y / Endabgabe.unit);
                 this.addComponent(cmpMaterial);
             }
+            /*gibt dem Avatar ein Leben*/
             hndUse() {
                 Endabgabe.gameState.health += 1;
                 Endabgabe.items.removeChild(this);
@@ -799,6 +794,8 @@ var Endabgabe;
             Hud.controller = new fcui.Controller(Endabgabe.gameState, gameHud);
             Hud.controller.updateUserInterface();
         }
+        /****************Anfang********************/
+        //Lebensbalgen für die Gegner wereden Erstellt 
         static hndHealthBar() {
             let currentHealth = document.getElementById("healthEnemy");
             currentHealth.style.width = 160 * Endabgabe.gameState.currentEnemyHealth / Endabgabe.gameState.enemyHealth + "px";
@@ -864,6 +861,7 @@ var Endabgabe;
             this.cmpEnemyHitAudio.connect(true);
             this.cmpEnemyHitAudio.volume = 0.5;
         }
+        /*Sound die einmalig abgespeilt werden*/
         playSound(_sound) {
             switch (_sound) {
                 case Sounds.AvatarHit:
@@ -888,6 +886,8 @@ var Endabgabe;
                     break;
             }
         }
+        /**********Anfang************/
+        // Sounds die in schleife laufen und Gestartet und Beedetwerden können 
         hndBackroundSound(_OnOff) {
             if (this.cmpAudioBackround.isPlaying && _OnOff == false) {
                 this.cmpAudioBackround.play(_OnOff);
@@ -916,15 +916,14 @@ var Endabgabe;
         Worldstatus[Worldstatus["genarate"] = 1] = "genarate";
     })(Worldstatus = Endabgabe.Worldstatus || (Endabgabe.Worldstatus = {}));
     class WorldGenarator {
+        //private txtFloor: fc.TextureImage = new fc.TextureImage("../GameAssets/Ground.png");
         constructor(_name) {
-            this.txtFloor = new fc.TextureImage("../GameAssets/Ground.png");
             this.name = _name;
             this.worldstatus = Worldstatus.idel;
         }
         genarateWorld(_levelNumber, _position) {
-            let mtrWall = new fc.Material("Wall", fc.ShaderTexture, new fc.CoatTextured(null, this.txtFloor));
             let levelRoot = new fc.Node("level" + _levelNumber);
-            levelRoot.addChild(new Endabgabe.Floor("Ground", new fc.Vector3(Endabgabe.worldLength, Endabgabe.unit, Endabgabe.unit), new fc.Vector3(0 + _position.x, -17 + _position.y, 0 + _position.z), mtrWall));
+            levelRoot.addChild(new Endabgabe.Floor("Ground", new fc.Vector3(Endabgabe.worldLength, Endabgabe.unit, Endabgabe.unit), new fc.Vector3(0 + _position.x, -17 + _position.y, 0 + _position.z)));
             this.tempWall = new Endabgabe.GameObject("LeftWall", new fc.Vector3(Endabgabe.unit, Endabgabe.worldhight, Endabgabe.unit), new fc.Vector3(-23 + _position.x, 0 + _position.y, 0 + _position.z));
             levelRoot.addChild(this.tempWall);
             levelRoot.addChild(new Endabgabe.GameObject("RightWall", new fc.Vector3(Endabgabe.unit, Endabgabe.worldhight, Endabgabe.unit), new fc.Vector3(23 + _position.x, 0 + _position.y, 0 + _position.z)));
@@ -935,7 +934,7 @@ var Endabgabe;
             for (let i = 0; i < fc.Random.default.getRange(0, 4); i++) {
                 xPos = fc.Random.default.getRange(xPos + jumpDistance, -(xPos + jumpDistance));
                 length = fc.Random.default.getRange(Endabgabe.unit, Endabgabe.worldLength / 2);
-                levelRoot.addChild(new Endabgabe.Floor("Ground", new fc.Vector3(length, Endabgabe.unit, Endabgabe.unit), new fc.Vector3(xPos + _position.x, (3 - (Endabgabe.unit - Endabgabe.unit / 4) * i) * -Endabgabe.unit * 2 + _position.y, 0 + _position.z), mtrWall));
+                levelRoot.addChild(new Endabgabe.Floor("Ground", new fc.Vector3(length, Endabgabe.unit, Endabgabe.unit), new fc.Vector3(xPos + _position.x, (3 - (Endabgabe.unit - Endabgabe.unit / 4) * i) * -Endabgabe.unit * 2 + _position.y, 0 + _position.z)));
             }
             return levelRoot;
         }

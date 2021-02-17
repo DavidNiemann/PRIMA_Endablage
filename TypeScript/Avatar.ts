@@ -17,8 +17,6 @@ namespace Endabgabe {
         private static animations: fcAid.SpriteSheetAnimations;
         private control: fc.Control = new fc.Control("AvatarControl", 10, fc.CONTROL_TYPE.PROPORTIONAL);
 
-        /*   private avatarLife: number;
-          private avatarDamage: number; */
 
         private fist: MoveObject;
         private sprite: fcAid.NodeSprite;
@@ -38,24 +36,14 @@ namespace Endabgabe {
             this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Avatar.animations["Idle"]);
             this.addChild(this.sprite);
 
-            this.fist = new MoveObject("fist", new fc.Vector3(_size.x, _size.y, _size.z), new fc.Vector3(/* _position.x, _position.y, _position.z */));
+            this.fist = new MoveObject("fist", new fc.Vector3(_size.x, _size.y, _size.z), new fc.Vector3(_position.x, _position.y, _position.z));
             this.fist.grounded = true;
             this.fist.mtxLocal.translateY(_size.y / 2);
             this.sprite.addChild(this.fist);
-            //this.removeComponent(this.getComponents(fc.ComponentMaterial)[0]);
-            //this.fist.removeComponent(this.fist.getComponents(fc.ComponentMaterial)[0]);
-            /*  this.audioShword = new fc.Audio("../GameSounds/mixkit_fast_sword.wav");
-             this.cmpShwordAudio = new fc.ComponentAudio(this.audioShword, false, false);
-             this.cmpShwordAudio.connect(true);
-             this.cmpShwordAudio.volume = 1;
- 
-             this.audioHit = new fc.Audio("../GameSounds/mixkit_Hit.mp3");
-             this.cmpHitAudio = new fc.ComponentAudio(this.audioHit, false, false);
-             this.cmpHitAudio.connect(true);
-             this.cmpHitAudio.volume = 1; */
         }
 
-
+        /*****************Start********************/
+        // Sprites werde Aus einem Bild generiert 
         public static generateSprites(_spritesheet: fc.CoatTextured): void {
             this.animations = {};
             let name: string = "Walk";
@@ -78,12 +66,15 @@ namespace Endabgabe {
             sprite.generateByGrid(fc.Rectangle.GET(30, 1071, 33, 33), 7, 8, fc.ORIGIN2D.BOTTOMCENTER, fc.Vector2.X(47));
             this.animations[name] = sprite;
         }
+        /*********************Ende***********************/
 
+        /*******************Anfang***********************/
+        // Steuerungs Methoden die über Events AUfgerufen Werden 
         public hadKeyboard = (): void => {
             if (this.fist.grounded)
 
                 if (fc.Keyboard.isPressedOne([fc.KEYBOARD_CODE.A, fc.KEYBOARD_CODE.ARROW_LEFT, fc.KEYBOARD_CODE.D, fc.KEYBOARD_CODE.ARROW_RIGHT])) {
-                   // this.setAnimation(AvatarStatus.walk);
+
                     this.control.setInput(
                         fc.Keyboard.mapToValue(-1, 0, [fc.KEYBOARD_CODE.A, fc.KEYBOARD_CODE.ARROW_LEFT])
                         + fc.Keyboard.mapToValue(1, 0, [fc.KEYBOARD_CODE.D, fc.KEYBOARD_CODE.ARROW_RIGHT])
@@ -91,7 +82,7 @@ namespace Endabgabe {
                     this.velocity.x = this.control.getOutput();
                     this.hnddDirection(this.velocity);
 
-              
+
 
                 }
         }
@@ -112,7 +103,43 @@ namespace Endabgabe {
 
         }
 
+        public strike = (): void => {
+            if (gameCondition == GamesConditions.PLAY) {
+                if (this.grounded)
+                    if (this.fist.grounded) {
+                        sounds.playSound(Sounds.Shword);
 
+
+                        this.fist.grounded = false;
+                        this.fist.mtxLocal.translateX(unit / 2);
+                        this.sprite.mtxLocal.translateX(unit / 2);
+                        this.setAnimation(AvatarStatus.strike);
+                        fc.Time.game.setTimer(500, 1, this.endstrike);
+                    }
+            }
+
+
+        }
+
+        public endstrike = (): void => {
+            this.setAnimation(AvatarStatus.idle);
+            this.fist.mtxLocal.translateX(-unit / 2);
+            this.sprite.mtxLocal.translateX(-unit / 2);
+            this.fist.grounded = true;
+
+        }
+
+        public hndMouse = (_event: MouseEvent): void => {
+            if (_event.movementX < 0) {
+                this.flip(true);
+
+            } else if (_event.movementX > 0) {
+                this.flip(false);
+            }
+        }
+        /***************Ende****************/
+        /***********Anfang*************/
+        //Verhalten des Avatars wird aktualisieren 
         public update(): void {
 
             if (!fc.Keyboard.isPressedOne([fc.KEYBOARD_CODE.A, fc.KEYBOARD_CODE.ARROW_LEFT, fc.KEYBOARD_CODE.D, fc.KEYBOARD_CODE.ARROW_RIGHT])) {
@@ -125,12 +152,12 @@ namespace Endabgabe {
             if (this.fist.grounded == false) {
 
                 for (let enemy of enemies.getChildren() as Enemy[]) {
-                    //console.log(this.fist.rect, enemy.rect , this.rect);
+
                     if (this.fist.checkCollision(enemy, false)) {
-                        // enemies.removeChild(enemy);
+
 
                         if (enemy.setHealth(avatarProperties.damage)) {
-                            //enemies.removeChild(enemy);
+
                             gameState.score += 1;
 
                         }
@@ -150,40 +177,9 @@ namespace Endabgabe {
             this.hndItems();
 
         }
-        public strike = (): void => {
-            if (gameCondition == GamesConditions.PLAY) {
-                if (this.grounded)
-                    if (this.fist.grounded) {
-                        sounds.playSound(Sounds.Shword);
-                     
-
-                        this.fist.grounded = false;
-                        this.fist.mtxLocal.translateX(unit / 2);
-                        this.sprite.mtxLocal.translateX(unit / 2);
-                        this.setAnimation(AvatarStatus.strike);
-                        fc.Time.game.setTimer(500, 1, this.endstrike);
-                    }
-            }
-
-
-        }
-
-        public endstrike = (): void => {
-            this.setAnimation(AvatarStatus.idle);
-            this.fist.mtxLocal.translateX(-unit / 2);
-            this.sprite.mtxLocal.translateX(-unit / 2);
-            this.fist.grounded = true;
-            
-        }
-
-        public hndMouse = (_event: MouseEvent): void => {
-            if (_event.movementX < 0) {
-                this.flip(true);
-
-            } else if (_event.movementX > 0) {
-                this.flip(false);
-            }
-        }
+        /***************Ende****************/
+        /***************Anfang******************/
+        // Methoden die Avatar Eigenschften beeinflussen 
         public newhealth(_damage: number): void {
             if (this.invulnerable == false) {
                 gameState.health -= _damage;
@@ -192,8 +188,8 @@ namespace Endabgabe {
                 if (gameState.health <= 0) {
                     hndGameOver();
                 }
-                
-             
+
+
             }
 
 
@@ -219,19 +215,19 @@ namespace Endabgabe {
                         this.avatarStatus = AvatarStatus.strike;
                         break;
                     case AvatarStatus.idle:
-                        //  this.cmpStepAudio.play(false);
+
                         this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Avatar.animations["Idle"]);
                         this.avatarStatus = AvatarStatus.idle;
                         sounds.stepSound(false);
                         break;
                     case AvatarStatus.walk:
-                        //  this.cmpStepAudio.play(true);
+
                         this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Avatar.animations["Walk"]);
                         this.avatarStatus = AvatarStatus.walk;
                         sounds.stepSound(true);
                         break;
                     case AvatarStatus.jump:
-                        //  this.cmpStepAudio.play(false);
+
                         this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Avatar.animations["jump"]);
                         this.avatarStatus = AvatarStatus.jump;
                         sounds.stepSound(false);
@@ -261,6 +257,6 @@ namespace Endabgabe {
     }
 
 
-
+    /***************Ende****************/
 
 }

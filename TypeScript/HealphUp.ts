@@ -16,7 +16,7 @@ namespace Endabgabe {
             cmpMaterial.pivot.scaleY(_size.y / unit);
             this.addComponent(cmpMaterial);
         }
-
+        /*gibt dem Avatar ein Leben*/
         public hndUse(): void {
             gameState.health += 1;
             items.removeChild(this);
