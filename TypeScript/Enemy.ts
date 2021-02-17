@@ -226,7 +226,6 @@ namespace Endabgabe {
                 this.sprite.mtxLocal.rotation = fc.Vector3.Y(_reverse ? 180 : 0);
         }
 
-
         /********************Ende************************ */
 
 

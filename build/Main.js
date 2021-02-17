@@ -847,7 +847,7 @@ var Endabgabe;
             this.audioJump = new fc.Audio("../GameSounds/Jump.mp3");
             this.cmpAudioJump = new fc.ComponentAudio(this.audioJump, false, false);
             this.cmpAudioJump.connect(true);
-            this.cmpAudioJump.volume = 0.1;
+            this.cmpAudioJump.volume = 0.5;
             this.audioLand = new fc.Audio("../GameSounds/land.mp3");
             this.cmpAudioLand = new fc.ComponentAudio(this.audioLand, false, false);
             this.cmpAudioLand.connect(true);
@@ -916,7 +916,6 @@ var Endabgabe;
         Worldstatus[Worldstatus["genarate"] = 1] = "genarate";
     })(Worldstatus = Endabgabe.Worldstatus || (Endabgabe.Worldstatus = {}));
     class WorldGenarator {
-        //private txtFloor: fc.TextureImage = new fc.TextureImage("../GameAssets/Ground.png");
         constructor(_name) {
             this.name = _name;
             this.worldstatus = Worldstatus.idel;
@@ -948,26 +947,18 @@ var Endabgabe;
             }
         }
         createNewWorld(_worldNumber) {
-            //for (let j: number = 0; j < Math.floor(_worldNumber / 10) + 1; j++) {
             Endabgabe.enemies.addChild(this.createEnemie(_worldNumber + 1));
-            // }
             Endabgabe.gameWorld.addChild(this.genarateWorld(_worldNumber + 1, fc.Vector3.X((_worldNumber + 1) * Endabgabe.worldLength)));
             Endabgabe.root.addChild(new Endabgabe.Background("Background", new fc.Vector3(Endabgabe.worldLength, Endabgabe.worldhight, Endabgabe.unit), fc.Vector3.X((_worldNumber + 1) * Endabgabe.worldLength)));
-            /*gameWorld.getChildrenByName("level" + _worldNumber)[0].removeChild(gameWorld.getChildrenByName("level" + _worldNumber)[0].getChildrenByName("RightWall")[0]);
-             gameWorld.getChildrenByName("level" + _worldNumber + 1)[0].removeChild(this.tempWall); */
             Endabgabe.gameWorld.getChild(0).removeChild(Endabgabe.gameWorld.getChild(0).getChildrenByName("RightWall")[0]);
             Endabgabe.gameWorld.getChild(1).removeChild(this.tempWall);
         }
         deleteoldWorld(_worldNumber) {
             Endabgabe.gameWorld.getChild(1).addChild(this.tempWall);
-            //gameWorld.getChildrenByName("level" + _worldNumber)[0].addChild(this.tempWall);
             Endabgabe.gameWorld.removeChild(Endabgabe.gameWorld.getChild(0));
             for (let enemy of Endabgabe.enemies.getChildren()) {
-                // enemy.setJob(JOB.walk);
                 enemy.activ = true;
             }
-            /* gameWorld.getChildrenByName("level" + _worldNumber + 1 )[0].addChild(this.tempWall);
-            gameWorld.removeChild(gameWorld.getChildrenByName("level" + _worldNumber )[0]); */
             this.createItems(_worldNumber);
             Endabgabe.Hud.setHubhealth();
         }

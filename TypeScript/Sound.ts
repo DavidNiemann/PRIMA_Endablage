@@ -51,7 +51,7 @@ namespace Endabgabe {
             this.audioJump = new fc.Audio("../GameSounds/Jump.mp3");
             this.cmpAudioJump = new fc.ComponentAudio(this.audioJump, false, false);
             this.cmpAudioJump.connect(true);
-            this.cmpAudioJump.volume = 0.1;
+            this.cmpAudioJump.volume = 0.5;
 
             this.audioLand = new fc.Audio("../GameSounds/land.mp3");
             this.cmpAudioLand = new fc.ComponentAudio(this.audioLand, false, false);
