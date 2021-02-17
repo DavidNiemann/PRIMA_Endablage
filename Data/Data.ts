@@ -1,6 +1,7 @@
 namespace Endabgabe {
 
     // let unit: number = 2;
+    
     export interface EnemyProperties {
         startLife: number;
         lifePerLevel: number;
