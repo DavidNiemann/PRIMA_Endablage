@@ -164,8 +164,8 @@ namespace Endabgabe {
                     this.setJob(JOB.attack);
                     this.fist.grounded = false;
                     this.sprite.mtxLocal.translateX(unit / 2);
-                    fc.Time.game.setTimer(1000, 1, this.strikeSetHitBox);
-                    fc.Time.game.setTimer(1300, 1, this.endstrike);
+                    fc.Time.game.setTimer(800, 1, this.strikeSetHitBox);
+                    fc.Time.game.setTimer(1100, 1, this.endstrike);
                     fc.Time.game.setTimer(2500, 1, this.endstrikeAnimation);
                 }
         }
