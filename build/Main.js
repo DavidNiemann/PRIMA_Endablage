@@ -265,7 +265,7 @@ var Endabgabe;
             if (this.invulnerable == false) {
                 Endabgabe.gameState.health -= _damage;
                 this.invulnerable = true;
-                Endabgabe.sounds.playSound(Endabgabe.Sounds.AvatarHit);
+                Endabgabe.sounds.playSound(Endabgabe.Sounds.avatarHit);
                 if (Endabgabe.gameState.health <= 0) {
                     Endabgabe.hndGameOver();
                 }
@@ -509,7 +509,7 @@ var Endabgabe;
             this.invulnerable = true;
             fc.Time.game.setTimer(500, 1, this.setVulnerable);
             this.health -= _damage;
-            Endabgabe.sounds.playSound(Endabgabe.Sounds.EnemyHit);
+            Endabgabe.sounds.playSound(Endabgabe.Sounds.enemyHit);
             Endabgabe.gameState.currentEnemyHealth -= Endabgabe.avatarProperties.damage;
             Endabgabe.Hud.hndHealthBar();
             if (this.health <= 0) {
@@ -821,20 +821,20 @@ var Endabgabe;
     // import fcaid = FudgeAid;
     let Sounds;
     (function (Sounds) {
-        Sounds[Sounds["Step"] = 0] = "Step";
-        Sounds[Sounds["AvatarHit"] = 1] = "AvatarHit";
+        Sounds[Sounds["step"] = 0] = "step";
+        Sounds[Sounds["avatarHit"] = 1] = "avatarHit";
         Sounds[Sounds["Shword"] = 2] = "Shword";
         Sounds[Sounds["Jump"] = 3] = "Jump";
         Sounds[Sounds["Land"] = 4] = "Land";
         Sounds[Sounds["collect"] = 5] = "collect";
-        Sounds[Sounds["EnemyHit"] = 6] = "EnemyHit";
+        Sounds[Sounds["enemyHit"] = 6] = "enemyHit";
     })(Sounds = Endabgabe.Sounds || (Endabgabe.Sounds = {}));
     class Sound {
         constructor() {
-            this.audioShword = new fc.Audio("../GameSounds/mixkit_fast_sword.wav");
-            this.cmpShwordAudio = new fc.ComponentAudio(this.audioShword, false, false);
-            this.cmpShwordAudio.connect(true);
-            this.cmpShwordAudio.volume = 0.5;
+            this.audioSword = new fc.Audio("../GameSounds/mixkit_fast_sword.wav");
+            this.cmpSwordAudio = new fc.ComponentAudio(this.audioSword, false, false);
+            this.cmpSwordAudio.connect(true);
+            this.cmpSwordAudio.volume = 0.5;
             this.audioAvatarHit = new fc.Audio("../GameSounds/mixkit_Hit.mp3");
             this.cmpAvatarHitAudio = new fc.ComponentAudio(this.audioAvatarHit, false, false);
             this.cmpAvatarHitAudio.connect(true);
@@ -843,10 +843,10 @@ var Endabgabe;
             this.cmpStepAudio = new fc.ComponentAudio(this.audioStep, true, false);
             this.cmpStepAudio.connect(true);
             this.cmpStepAudio.volume = 0.5;
-            this.audioBackround = new fc.Audio("../GameSounds/MedivalBeep.mp3");
-            this.cmpAudioBackround = new fc.ComponentAudio(this.audioBackround, true, false);
-            this.cmpAudioBackround.connect(true);
-            this.cmpAudioBackround.volume = 0.5;
+            this.audioBackground = new fc.Audio("../GameSounds/MedivalBeep.mp3");
+            this.cmpAudioBackground = new fc.ComponentAudio(this.audioBackground, true, false);
+            this.cmpAudioBackground.connect(true);
+            this.cmpAudioBackground.volume = 0.5;
             this.audioJump = new fc.Audio("../GameSounds/Jump.mp3");
             this.cmpAudioJump = new fc.ComponentAudio(this.audioJump, false, false);
             this.cmpAudioJump.connect(true);
@@ -855,8 +855,8 @@ var Endabgabe;
             this.cmpAudioLand = new fc.ComponentAudio(this.audioLand, false, false);
             this.cmpAudioLand.connect(true);
             this.cmpAudioLand.volume = 0.5;
-            this.audiocollect = new fc.Audio("../GameSounds/einsammeln.mp3");
-            this.cmpAudioCollect = new fc.ComponentAudio(this.audiocollect, false, false);
+            this.audioCollect = new fc.Audio("../GameSounds/einsammeln.mp3");
+            this.cmpAudioCollect = new fc.ComponentAudio(this.audioCollect, false, false);
             this.cmpAudioCollect.connect(true);
             this.cmpAudioCollect.volume = 0.5;
             this.audioEnemyHit = new fc.Audio("../GameSounds/EnemyHit.mp3");
@@ -867,11 +867,11 @@ var Endabgabe;
         /*Sound die einmalig abgespeilt werden*/
         playSound(_sound) {
             switch (_sound) {
-                case Sounds.AvatarHit:
+                case Sounds.avatarHit:
                     this.cmpAvatarHitAudio.play(true);
                     break;
                 case Sounds.Shword:
-                    this.cmpShwordAudio.play(true);
+                    this.cmpSwordAudio.play(true);
                     break;
                 case Sounds.Jump:
                     this.cmpAudioJump.play(true);
@@ -882,7 +882,7 @@ var Endabgabe;
                 case Sounds.collect:
                     this.cmpAudioCollect.play(true);
                     break;
-                case Sounds.EnemyHit:
+                case Sounds.enemyHit:
                     this.cmpEnemyHitAudio.play(true);
                     break;
                 default:
@@ -892,11 +892,11 @@ var Endabgabe;
         /**********Anfang************/
         // Sounds die in schleife laufen und Gestartet und Beedetwerden können 
         hndBackroundSound(_OnOff) {
-            if (this.cmpAudioBackround.isPlaying && _OnOff == false) {
-                this.cmpAudioBackround.play(_OnOff);
+            if (this.cmpAudioBackground.isPlaying && _OnOff == false) {
+                this.cmpAudioBackground.play(_OnOff);
             }
-            else if (this.cmpAudioBackround.isPlaying == false && _OnOff) {
-                this.cmpAudioBackround.play(_OnOff);
+            else if (this.cmpAudioBackground.isPlaying == false && _OnOff) {
+                this.cmpAudioBackground.play(_OnOff);
             }
         }
         stepSound(_OnOff) {

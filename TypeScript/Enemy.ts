@@ -202,7 +202,7 @@ namespace Endabgabe {
             this.invulnerable = true;
             fc.Time.game.setTimer(500, 1, this.setVulnerable);
             this.health -= _damage;
-            sounds.playSound(Sounds.EnemyHit);
+            sounds.playSound(Sounds.enemyHit);
 
             gameState.currentEnemyHealth -= avatarProperties.damage;
             Hud.hndHealthBar();

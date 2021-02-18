@@ -184,7 +184,7 @@ namespace Endabgabe {
             if (this.invulnerable == false) {
                 gameState.health -= _damage;
                 this.invulnerable = true;
-                sounds.playSound(Sounds.AvatarHit);
+                sounds.playSound(Sounds.avatarHit);
                 if (gameState.health <= 0) {
                     hndGameOver();
                 }
