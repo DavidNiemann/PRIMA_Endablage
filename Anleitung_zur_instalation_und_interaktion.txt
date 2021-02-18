@@ -1,0 +1,21 @@
+Installation: 
+	Es muss der Ordner "Niemann_David_Game" in Visual Studio Code geöffnet werden.
+	Dann Main.html in dem buld Order mit der Erweiterung des live Servers gestartet werden.
+	
+	Link zum repository: https://github.com/DavidNiemann/PRIMA_Endablage
+
+	Endablage Link zur Anwendung: https://davidniemann.github.io/PRIMA_Endablage/build/Main.html
+
+	Link zu den TypeScript Dateien: https://github.com/DavidNiemann/PRIMA_Endablage/tree/main/TypeScript
+
+	Link zum Designdokument: https://github.com/DavidNiemann/PRIMA_Endablage/tree/main/Designdokument
+
+Interaktion: 	
+	starten: mit einem klick auf den Startbutten 
+	pausieren: mit einem klick auf den Pausebutten
+	neustarten:  mit einem klick auf den Restartbutten 
+	
+	A & D: Laufen 
+	Space: Springen 
+	Linke Maustaste: Angreifen
+	
