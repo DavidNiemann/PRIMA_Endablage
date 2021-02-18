@@ -32,6 +32,7 @@ namespace Endabgabe {
             this.addChild(this.sprite);
             this.sprite.mtxLocal.translateY(-_size.y / 2);
             this.sprite.mtxLocal.translateZ(0.01);
+            
             this.fist = new MoveObject("fist", new fc.Vector3(_size.x, _size.y, _size.z), new fc.Vector3(0, 0, 0));
             this.fist.grounded = true;
             this.fist.mtxLocal.translateY(_size.y / 2);
@@ -39,7 +40,7 @@ namespace Endabgabe {
             this.sprite.setAnimation(<fcAid.SpriteSheetAnimation>Enemy.animations["Idle"]);
             this.health = _health;
             this.damage = _damage;
-
+            this.fist.mtxLocal.translateX(unit / 2);
         }
         /*****************Start********************/
         // Sprites werde Aus einem Bild generiert 

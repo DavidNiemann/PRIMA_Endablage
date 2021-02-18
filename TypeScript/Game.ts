@@ -229,7 +229,7 @@ namespace Endabgabe {
                     butten.value = "start";
                     butten.innerHTML = "start";
                     sounds.hndBackroundSound(false);
-
+                    sounds.stepSound(false);
                     break;
                 case "restart":
                     let gameOverText: HTMLParagraphElement = (<HTMLParagraphElement>document.getElementById("gameover"));
@@ -243,6 +243,7 @@ namespace Endabgabe {
                     gameState.score = 0;
                     movableCamara = false;
                     sounds.hndBackroundSound(false);
+                    sounds.stepSound(false);
                     sceneLoad();
                     break;
                 default:

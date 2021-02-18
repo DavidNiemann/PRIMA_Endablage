@@ -395,6 +395,7 @@ var Endabgabe;
             this.sprite.setAnimation(Enemy.animations["Idle"]);
             this.health = _health;
             this.damage = _damage;
+            this.fist.mtxLocal.translateX(Endabgabe.unit / 2);
         }
         /*****************Start********************/
         // Sprites werde Aus einem Bild generiert 
@@ -712,6 +713,7 @@ var Endabgabe;
                     butten.value = "start";
                     butten.innerHTML = "start";
                     Endabgabe.sounds.hndBackroundSound(false);
+                    Endabgabe.sounds.stepSound(false);
                     break;
                 case "restart":
                     let gameOverText = document.getElementById("gameover");
@@ -724,6 +726,7 @@ var Endabgabe;
                     Endabgabe.gameState.score = 0;
                     movableCamara = false;
                     Endabgabe.sounds.hndBackroundSound(false);
+                    Endabgabe.sounds.stepSound(false);
                     sceneLoad();
                     break;
                 default:
