@@ -13,7 +13,7 @@ namespace Endabgabe {
             this.addComponent(new fc.ComponentTransform(fc.Matrix4x4.TRANSLATION(_position)));
             let cmpQuad: fc.ComponentMesh = new fc.ComponentMesh(GameObject.meshQuad);
             this.addComponent(cmpQuad);
-            cmpQuad.pivot.scale(_size);
+            cmpQuad.mtxPivot.scale(_size);
 
 
              

@@ -6,10 +6,10 @@ namespace Endabgabe {
         
         public constructor(_name: string, _size: fc.Vector3, _position: fc.Vector3) { 
             super(_name, _size, _position);
-            let mtrWall: fc.Material = new fc.Material("Wall", fc.ShaderTexture, new fc.CoatTextured(null, Floor.txtFloor));
+            let mtrWall: fc.Material = new fc.Material("Wall", fc.ShaderTexture, new fc.CoatTextured(white, Floor.txtFloor));
             let cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(mtrWall);
-            cmpMaterial.pivot.scaleX(_size.x / unit);
-            cmpMaterial.pivot.scaleY(_size.y / unit);
+            cmpMaterial.mtxPivot.scaleX(_size.x / unit);
+            cmpMaterial.mtxPivot.scaleY(_size.y / unit);
             this.addComponent(cmpMaterial);
         }
     }

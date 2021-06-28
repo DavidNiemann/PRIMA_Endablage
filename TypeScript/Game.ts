@@ -8,6 +8,7 @@ namespace Endabgabe {
 
     window.addEventListener("load", sceneLoad);
 
+    export let white: fc.Color = fc.Color.CSS("White");
     export let gameCondition: GamesConditions;
     export let viewport: fc.Viewport;
 
@@ -77,8 +78,8 @@ namespace Endabgabe {
         camaraNode.addComponent(new fc.ComponentTransform());
 
         let cmpCamera: fc.ComponentCamera = new fc.ComponentCamera();
-        cmpCamera.pivot.translateZ(worldLength);
-        cmpCamera.pivot.rotateY(180);
+        cmpCamera.mtxPivot.translateZ(worldLength);
+        cmpCamera.mtxPivot.rotateY(180);
         camaraNode.addComponent(cmpCamera);
 
         document.addEventListener("keypress", avatar.hndJump);
@@ -97,7 +98,7 @@ namespace Endabgabe {
 
         viewport = new fc.Viewport();
         viewport.initialize("Viewport", root, cmpCamera, canvas);
-        viewport.camera.backgroundColor = fc.Color.CSS("Blue");
+        viewport.camera.clrBackground = fc.Color.CSS("Blue");
 
         fc.Loop.addEventListener(fc.EVENT.LOOP_FRAME, hndLoop);
         fc.Loop.start(fc.LOOP_MODE.TIME_GAME, 60);
@@ -159,14 +160,14 @@ namespace Endabgabe {
     async function createAvatarAssets(): Promise<void> {
         let txtAvatar: fc.TextureImage = new fc.TextureImage();
         await txtAvatar.load("../GameAssets/AvatarAssets.png");
-        let coatSprite: fc.CoatTextured = new fc.CoatTextured(null, txtAvatar);
+        let coatSprite: fc.CoatTextured = new fc.CoatTextured(white, txtAvatar);
         Avatar.generateSprites(coatSprite);
 
     }
     async function createEnemyAssets(): Promise<void> {
         let txtEnemy: fc.TextureImage = new fc.TextureImage();
         await txtEnemy.load("../GameAssets/Skeleton.png");
-        let coatSprite: fc.CoatTextured = new fc.CoatTextured(null, txtEnemy);
+        let coatSprite: fc.CoatTextured = new fc.CoatTextured(white, txtEnemy);
         Enemy.generateSprites(coatSprite);
     }
 

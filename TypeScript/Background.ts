@@ -9,7 +9,7 @@ namespace Endabgabe {
             super(_name);
 
             let cmpQuad: fc.ComponentMesh = new fc.ComponentMesh(Background.meshQuad);
-            let mtrBackground: fc.Material = new fc.Material("Background", fc.ShaderTexture, new fc.CoatTextured(null, Background.txtBackground));
+            let mtrBackground: fc.Material = new fc.Material("Background", fc.ShaderTexture, new fc.CoatTextured(white, Background.txtBackground));
             let cmpMaterial: fc.ComponentMaterial = new fc.ComponentMaterial(mtrBackground);
             this.addComponent(new fc.ComponentTransform(fc.Matrix4x4.TRANSLATION(_position)));
             this.addComponent(cmpQuad);

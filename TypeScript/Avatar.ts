@@ -69,7 +69,7 @@ namespace Endabgabe {
         /*********************Ende***********************/
 
         /*******************Anfang***********************/
-        // Steuerungs Methoden die über Events AUfgerufen Werden 
+        // Steuerungs Methoden die über Events Aufgerufen Werden 
         public hadKeyboard = (): void => {
             if (this.fist.grounded)
 

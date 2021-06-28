@@ -55,11 +55,11 @@ namespace Endabgabe {
         public hndYCollision(_target: GameObject): void {
             if (this.mtxLocal.translation.y > _target.mtxLocal.translation.y) {
 
-                if (this.mtxLocal.translation.y != _target.mtxLocal.translation.y + 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.y + _target.getComponent(fc.ComponentMesh).pivot.scaling.y)) {
+                if (this.mtxLocal.translation.y != _target.mtxLocal.translation.y + 0.5 * (this.getComponent(fc.ComponentMesh).mtxPivot.scaling.y + _target.getComponent(fc.ComponentMesh).mtxPivot.scaling.y)) {
                     this.grounded = true;
                     sounds.playSound(Sounds.Land);
                     this.velocity.y = 0;
-                    this.mtxLocal.translation = new fc.Vector3(this.mtxLocal.translation.x, _target.mtxLocal.translation.y + 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.y + _target.getComponent(fc.ComponentMesh).pivot.scaling.y), 0);
+                    this.mtxLocal.translation = new fc.Vector3(this.mtxLocal.translation.x, _target.mtxLocal.translation.y + 0.5 * (this.getComponent(fc.ComponentMesh).mtxPivot.scaling.y + _target.getComponent(fc.ComponentMesh).mtxPivot.scaling.y), 0);
                 }
             } else { this.grounded = false; }
 
@@ -68,15 +68,15 @@ namespace Endabgabe {
             if (_target.name.includes("Wall") == false)
                 return;
             if (this.mtxLocal.translation.x < _target.mtxLocal.translation.x) {
-                if (this.mtxLocal.translation.x != _target.mtxLocal.translation.x - 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.x + _target.getComponent(fc.ComponentMesh).pivot.scaling.x)) {
+                if (this.mtxLocal.translation.x != _target.mtxLocal.translation.x - 0.5 * (this.getComponent(fc.ComponentMesh).mtxPivot.scaling.x + _target.getComponent(fc.ComponentMesh).mtxPivot.scaling.x)) {
 
-                    this.mtxLocal.translation = new fc.Vector3(_target.mtxLocal.translation.x - 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.x + _target.getComponent(fc.ComponentMesh).pivot.scaling.x), this.mtxLocal.translation.y, 0);
+                    this.mtxLocal.translation = new fc.Vector3(_target.mtxLocal.translation.x - 0.5 * (this.getComponent(fc.ComponentMesh).mtxPivot.scaling.x + _target.getComponent(fc.ComponentMesh).mtxPivot.scaling.x), this.mtxLocal.translation.y, 0);
                 }
             }
             else {
-                if (this.mtxLocal.translation.x != _target.mtxLocal.translation.x + 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.x + _target.getComponent(fc.ComponentMesh).pivot.scaling.x)) {
+                if (this.mtxLocal.translation.x != _target.mtxLocal.translation.x + 0.5 * (this.getComponent(fc.ComponentMesh).mtxPivot.scaling.x + _target.getComponent(fc.ComponentMesh).mtxPivot.scaling.x)) {
                     this.velocity.x = 0;
-                    this.mtxLocal.translation = new fc.Vector3(_target.mtxLocal.translation.x + 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.x + _target.getComponent(fc.ComponentMesh).pivot.scaling.x), this.mtxLocal.translation.y, 0);
+                    this.mtxLocal.translation = new fc.Vector3(_target.mtxLocal.translation.x + 0.5 * (this.getComponent(fc.ComponentMesh).mtxPivot.scaling.x + _target.getComponent(fc.ComponentMesh).mtxPivot.scaling.x), this.mtxLocal.translation.y, 0);
                 }
             }
         }

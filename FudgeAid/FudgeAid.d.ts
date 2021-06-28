@@ -1,4 +1,4 @@
-/// <reference path="../../core/build/fudgecore.d.ts" />
+/// <reference path="../../Core/Build/FudgeCore.d.ts" />
 /// <reference types="../../core/build/fudgecore" />
 import ƒ = FudgeCore;
 import ƒAid = FudgeAid;
@@ -66,8 +66,8 @@ declare namespace FudgeAid {
         private minDistance;
         private maxDistance;
         constructor(_cmpCamera: ƒ.ComponentCamera, _distanceStart?: number, _maxRotX?: number, _minDistance?: number, _maxDistance?: number);
-        get component(): ƒ.ComponentCamera;
-        get node(): ƒ.Node;
+        get cmpCamera(): ƒ.ComponentCamera;
+        get nodeCamera(): ƒ.Node;
         set distance(_distance: number);
         get distance(): number;
         set rotationY(_angle: number);
@@ -76,6 +76,7 @@ declare namespace FudgeAid {
         get rotationX(): number;
         rotateY(_delta: number): void;
         rotateX(_delta: number): void;
+        positionCamera(_posWorld: ƒ.Vector3): void;
         hndAxisOutput: EventListener;
     }
 }
@@ -113,7 +114,7 @@ declare namespace FudgeAid {
         private static count;
         constructor(_name?: string, _transform?: ƒ.Matrix4x4, _material?: ƒ.Material, _mesh?: ƒ.Mesh);
         private static getNextName;
-        get pivot(): ƒ.Matrix4x4;
+        get mtxMeshPivot(): ƒ.Matrix4x4;
         deserialize(_serialization: ƒ.Serialization): Promise<ƒ.Serializable>;
     }
 }
@@ -123,6 +124,7 @@ declare namespace FudgeAid {
         private static internalResources;
         constructor(_name: string, _color: ƒ.Color);
         private static createInternalResources;
+        set color(_color: ƒ.Color);
     }
 }
 declare namespace FudgeAid {

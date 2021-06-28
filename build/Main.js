@@ -3,20 +3,17 @@ var Endabgabe;
 (function (Endabgabe) {
     var fc = FudgeCore;
     // import fcaid = FudgeAid;
-    let GameObject = /** @class */ (() => {
-        class GameObject extends fc.Node {
-            constructor(_name, _size, _position) {
-                super(_name);
-                this.rect = new fc.Rectangle(_position.x, _position.y, _size.x, _size.y, fc.ORIGIN2D.CENTER);
-                this.addComponent(new fc.ComponentTransform(fc.Matrix4x4.TRANSLATION(_position)));
-                let cmpQuad = new fc.ComponentMesh(GameObject.meshQuad);
-                this.addComponent(cmpQuad);
-                cmpQuad.pivot.scale(_size);
-            }
+    class GameObject extends fc.Node {
+        constructor(_name, _size, _position) {
+            super(_name);
+            this.rect = new fc.Rectangle(_position.x, _position.y, _size.x, _size.y, fc.ORIGIN2D.CENTER);
+            this.addComponent(new fc.ComponentTransform(fc.Matrix4x4.TRANSLATION(_position)));
+            let cmpQuad = new fc.ComponentMesh(GameObject.meshQuad);
+            this.addComponent(cmpQuad);
+            cmpQuad.mtxPivot.scale(_size);
         }
-        GameObject.meshQuad = new fc.MeshQuad();
-        return GameObject;
-    })();
+    }
+    GameObject.meshQuad = new fc.MeshQuad();
     Endabgabe.GameObject = GameObject;
 })(Endabgabe || (Endabgabe = {}));
 var Endabgabe;
@@ -60,11 +57,11 @@ var Endabgabe;
         // Verarbeitet die Colloesion mit einer Wand und Boden
         hndYCollision(_target) {
             if (this.mtxLocal.translation.y > _target.mtxLocal.translation.y) {
-                if (this.mtxLocal.translation.y != _target.mtxLocal.translation.y + 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.y + _target.getComponent(fc.ComponentMesh).pivot.scaling.y)) {
+                if (this.mtxLocal.translation.y != _target.mtxLocal.translation.y + 0.5 * (this.getComponent(fc.ComponentMesh).mtxPivot.scaling.y + _target.getComponent(fc.ComponentMesh).mtxPivot.scaling.y)) {
                     this.grounded = true;
                     Endabgabe.sounds.playSound(Endabgabe.Sounds.Land);
                     this.velocity.y = 0;
-                    this.mtxLocal.translation = new fc.Vector3(this.mtxLocal.translation.x, _target.mtxLocal.translation.y + 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.y + _target.getComponent(fc.ComponentMesh).pivot.scaling.y), 0);
+                    this.mtxLocal.translation = new fc.Vector3(this.mtxLocal.translation.x, _target.mtxLocal.translation.y + 0.5 * (this.getComponent(fc.ComponentMesh).mtxPivot.scaling.y + _target.getComponent(fc.ComponentMesh).mtxPivot.scaling.y), 0);
                 }
             }
             else {
@@ -75,14 +72,14 @@ var Endabgabe;
             if (_target.name.includes("Wall") == false)
                 return;
             if (this.mtxLocal.translation.x < _target.mtxLocal.translation.x) {
-                if (this.mtxLocal.translation.x != _target.mtxLocal.translation.x - 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.x + _target.getComponent(fc.ComponentMesh).pivot.scaling.x)) {
-                    this.mtxLocal.translation = new fc.Vector3(_target.mtxLocal.translation.x - 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.x + _target.getComponent(fc.ComponentMesh).pivot.scaling.x), this.mtxLocal.translation.y, 0);
+                if (this.mtxLocal.translation.x != _target.mtxLocal.translation.x - 0.5 * (this.getComponent(fc.ComponentMesh).mtxPivot.scaling.x + _target.getComponent(fc.ComponentMesh).mtxPivot.scaling.x)) {
+                    this.mtxLocal.translation = new fc.Vector3(_target.mtxLocal.translation.x - 0.5 * (this.getComponent(fc.ComponentMesh).mtxPivot.scaling.x + _target.getComponent(fc.ComponentMesh).mtxPivot.scaling.x), this.mtxLocal.translation.y, 0);
                 }
             }
             else {
-                if (this.mtxLocal.translation.x != _target.mtxLocal.translation.x + 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.x + _target.getComponent(fc.ComponentMesh).pivot.scaling.x)) {
+                if (this.mtxLocal.translation.x != _target.mtxLocal.translation.x + 0.5 * (this.getComponent(fc.ComponentMesh).mtxPivot.scaling.x + _target.getComponent(fc.ComponentMesh).mtxPivot.scaling.x)) {
                     this.velocity.x = 0;
-                    this.mtxLocal.translation = new fc.Vector3(_target.mtxLocal.translation.x + 0.5 * (this.getComponent(fc.ComponentMesh).pivot.scaling.x + _target.getComponent(fc.ComponentMesh).pivot.scaling.x), this.mtxLocal.translation.y, 0);
+                    this.mtxLocal.translation = new fc.Vector3(_target.mtxLocal.translation.x + 0.5 * (this.getComponent(fc.ComponentMesh).mtxPivot.scaling.x + _target.getComponent(fc.ComponentMesh).mtxPivot.scaling.x), this.mtxLocal.translation.y, 0);
                 }
             }
         }
@@ -145,7 +142,7 @@ var Endabgabe;
             this.invulnerable = false;
             /*********************Ende***********************/
             /*******************Anfang***********************/
-            // Steuerungs Methoden die über Events AUfgerufen Werden 
+            // Steuerungs Methoden die über Events Aufgerufen Werden 
             this.hadKeyboard = () => {
                 if (this.fist.grounded)
                     if (fc.Keyboard.isPressedOne([fc.KEYBOARD_CODE.A, fc.KEYBOARD_CODE.ARROW_LEFT, fc.KEYBOARD_CODE.D, fc.KEYBOARD_CODE.ARROW_RIGHT])) {
@@ -325,23 +322,20 @@ var Endabgabe;
 var Endabgabe;
 (function (Endabgabe) {
     var fc = FudgeCore;
-    let Background = /** @class */ (() => {
-        class Background extends fc.Node {
-            constructor(_name, _size, _position) {
-                super(_name);
-                let cmpQuad = new fc.ComponentMesh(Background.meshQuad);
-                let mtrBackground = new fc.Material("Background", fc.ShaderTexture, new fc.CoatTextured(null, Background.txtBackground));
-                let cmpMaterial = new fc.ComponentMaterial(mtrBackground);
-                this.addComponent(new fc.ComponentTransform(fc.Matrix4x4.TRANSLATION(_position)));
-                this.addComponent(cmpQuad);
-                this.mtxLocal.scale(_size);
-                this.addComponent(cmpMaterial);
-            }
+    class Background extends fc.Node {
+        constructor(_name, _size, _position) {
+            super(_name);
+            let cmpQuad = new fc.ComponentMesh(Background.meshQuad);
+            let mtrBackground = new fc.Material("Background", fc.ShaderTexture, new fc.CoatTextured(Endabgabe.white, Background.txtBackground));
+            let cmpMaterial = new fc.ComponentMaterial(mtrBackground);
+            this.addComponent(new fc.ComponentTransform(fc.Matrix4x4.TRANSLATION(_position)));
+            this.addComponent(cmpQuad);
+            this.mtxLocal.scale(_size);
+            this.addComponent(cmpMaterial);
         }
-        Background.txtBackground = new fc.TextureImage("../GameAssets/Background.png");
-        Background.meshQuad = new fc.MeshQuad();
-        return Background;
-    })();
+    }
+    Background.txtBackground = new fc.TextureImage("../GameAssets/Background.png");
+    Background.meshQuad = new fc.MeshQuad();
     Endabgabe.Background = Background;
 })(Endabgabe || (Endabgabe = {}));
 var Endabgabe;
@@ -529,20 +523,17 @@ var Endabgabe;
 var Endabgabe;
 (function (Endabgabe) {
     var fc = FudgeCore;
-    let Floor = /** @class */ (() => {
-        class Floor extends Endabgabe.GameObject {
-            constructor(_name, _size, _position) {
-                super(_name, _size, _position);
-                let mtrWall = new fc.Material("Wall", fc.ShaderTexture, new fc.CoatTextured(null, Floor.txtFloor));
-                let cmpMaterial = new ƒ.ComponentMaterial(mtrWall);
-                cmpMaterial.pivot.scaleX(_size.x / Endabgabe.unit);
-                cmpMaterial.pivot.scaleY(_size.y / Endabgabe.unit);
-                this.addComponent(cmpMaterial);
-            }
+    class Floor extends Endabgabe.GameObject {
+        constructor(_name, _size, _position) {
+            super(_name, _size, _position);
+            let mtrWall = new fc.Material("Wall", fc.ShaderTexture, new fc.CoatTextured(Endabgabe.white, Floor.txtFloor));
+            let cmpMaterial = new ƒ.ComponentMaterial(mtrWall);
+            cmpMaterial.mtxPivot.scaleX(_size.x / Endabgabe.unit);
+            cmpMaterial.mtxPivot.scaleY(_size.y / Endabgabe.unit);
+            this.addComponent(cmpMaterial);
         }
-        Floor.txtFloor = new fc.TextureImage("../GameAssets/Ground.png");
-        return Floor;
-    })();
+    }
+    Floor.txtFloor = new fc.TextureImage("../GameAssets/Ground.png");
     Endabgabe.Floor = Floor;
 })(Endabgabe || (Endabgabe = {}));
 var Endabgabe;
@@ -556,6 +547,7 @@ var Endabgabe;
         GamesConditions[GamesConditions["STARTGAME"] = 3] = "STARTGAME";
     })(GamesConditions = Endabgabe.GamesConditions || (Endabgabe.GamesConditions = {}));
     window.addEventListener("load", sceneLoad);
+    Endabgabe.white = fc.Color.CSS("White");
     Endabgabe.worldNumber = 0;
     let camaraNode;
     let worldGenerator;
@@ -595,8 +587,8 @@ var Endabgabe;
         Endabgabe.enemies.getChild(0).activ = true;
         camaraNode.addComponent(new fc.ComponentTransform());
         let cmpCamera = new fc.ComponentCamera();
-        cmpCamera.pivot.translateZ(Endabgabe.worldLength);
-        cmpCamera.pivot.rotateY(180);
+        cmpCamera.mtxPivot.translateZ(Endabgabe.worldLength);
+        cmpCamera.mtxPivot.rotateY(180);
         camaraNode.addComponent(cmpCamera);
         document.addEventListener("keypress", Endabgabe.avatar.hndJump);
         document.addEventListener("keypress", Endabgabe.avatar.hadKeyboard);
@@ -612,7 +604,7 @@ var Endabgabe;
         Endabgabe.Hud.setHubhealth();
         Endabgabe.viewport = new fc.Viewport();
         Endabgabe.viewport.initialize("Viewport", Endabgabe.root, cmpCamera, canvas);
-        Endabgabe.viewport.camera.backgroundColor = fc.Color.CSS("Blue");
+        Endabgabe.viewport.camera.clrBackground = fc.Color.CSS("Blue");
         fc.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, hndLoop);
         fc.Loop.start(fc.LOOP_MODE.TIME_GAME, 60);
         Endabgabe.viewport.draw();
@@ -659,13 +651,13 @@ var Endabgabe;
     async function createAvatarAssets() {
         let txtAvatar = new fc.TextureImage();
         await txtAvatar.load("../GameAssets/AvatarAssets.png");
-        let coatSprite = new fc.CoatTextured(null, txtAvatar);
+        let coatSprite = new fc.CoatTextured(Endabgabe.white, txtAvatar);
         Endabgabe.Avatar.generateSprites(coatSprite);
     }
     async function createEnemyAssets() {
         let txtEnemy = new fc.TextureImage();
         await txtEnemy.load("../GameAssets/Skeleton.png");
-        let coatSprite = new fc.CoatTextured(null, txtEnemy);
+        let coatSprite = new fc.CoatTextured(Endabgabe.white, txtEnemy);
         Endabgabe.Enemy.generateSprites(coatSprite);
     }
     async function loaddata(_url) {
@@ -753,26 +745,23 @@ var Endabgabe;
 var Endabgabe;
 (function (Endabgabe) {
     var fc = FudgeCore;
-    let HealthUp = /** @class */ (() => {
-        class HealthUp extends Endabgabe.MoveObject {
-            constructor(_name, _size, _position) {
-                super(_name, _size, _position);
-                let mtrHeart = new fc.Material("Heart", fc.ShaderTexture, new fc.CoatTextured(null, HealthUp.txtHeart));
-                let cmpMaterial = new ƒ.ComponentMaterial(mtrHeart);
-                cmpMaterial.pivot.scaleX(_size.x / Endabgabe.unit);
-                cmpMaterial.pivot.scaleY(_size.y / Endabgabe.unit);
-                this.addComponent(cmpMaterial);
-            }
-            /*gibt dem Avatar ein Leben*/
-            hndUse() {
-                Endabgabe.gameState.health += 1;
-                Endabgabe.items.removeChild(this);
-                Endabgabe.sounds.playSound(Endabgabe.Sounds.collect);
-            }
+    class HealthUp extends Endabgabe.MoveObject {
+        constructor(_name, _size, _position) {
+            super(_name, _size, _position);
+            let mtrHeart = new fc.Material("Heart", fc.ShaderTexture, new fc.CoatTextured(Endabgabe.white, HealthUp.txtHeart));
+            let cmpMaterial = new ƒ.ComponentMaterial(mtrHeart);
+            cmpMaterial.mtxPivot.scaleX(_size.x / Endabgabe.unit);
+            cmpMaterial.mtxPivot.scaleY(_size.y / Endabgabe.unit);
+            this.addComponent(cmpMaterial);
         }
-        HealthUp.txtHeart = new fc.TextureImage("../GameAssets/Heart.png");
-        return HealthUp;
-    })();
+        /*gibt dem Avatar ein Leben*/
+        hndUse() {
+            Endabgabe.gameState.health += 1;
+            Endabgabe.items.removeChild(this);
+            Endabgabe.sounds.playSound(Endabgabe.Sounds.collect);
+        }
+    }
+    HealthUp.txtHeart = new fc.TextureImage("../GameAssets/Heart.png");
     Endabgabe.HealthUp = HealthUp;
 })(Endabgabe || (Endabgabe = {}));
 var Endabgabe;
